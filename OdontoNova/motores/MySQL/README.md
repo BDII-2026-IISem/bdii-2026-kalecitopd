@@ -1,134 +1,100 @@
--- ============================================================
--- PROYECTO 19: OdontoNova - Gestión Odontológica
--- Motor: MySQL 8.0
--- Base de Datos: odontonova_db
--- ============================================================
+# Proyecto 19: OdontoNova - Gestión Odontológica
 
-CREATE DATABASE IF NOT EXISTS odontonova_db;
-USE odontonova_db;
+## Descripción del Proyecto
+OdontoNova es una solución integral orientada a la gestión clínica y administrativa odontológica. Integrará reserva de agenda, control de historias clínicas, planes de tratamiento, seguimiento de sesiones clínicas y administración de pagos.
 
--- 1. Tabla: Pacientes
-CREATE TABLE IF NOT EXISTS pacientes (
-id INT AUTO_INCREMENT PRIMARY KEY,
-tipo_documento VARCHAR(20) NOT NULL,
-numero_documento VARCHAR(50) NOT NULL UNIQUE,
-nombre VARCHAR(100) NOT NULL,
-fecha_nacimiento DATE NOT NULL,
-is_active BOOLEAN DEFAULT TRUE,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+---
 
--- 2. Tabla: Odontólogos
-CREATE TABLE IF NOT EXISTS odontologos (
-id INT AUTO_INCREMENT PRIMARY KEY,
-nombre VARCHAR(100) NOT NULL,
-descripcion TEXT,
-is_active BOOLEAN DEFAULT TRUE,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+## Estructura y Creación de la Base de Datos
 
--- 3. Tabla: Sillones
-CREATE TABLE IF NOT EXISTS sillones (
-id INT AUTO_INCREMENT PRIMARY KEY,
-nombre VARCHAR(100) NOT NULL,
-descripcion TEXT,
-is_active BOOLEAN DEFAULT TRUE,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+La base de datos `odontonova_db` se construyó en **MySQL 8.0** desplegado mediante Docker bajo entorno WSL/Ubuntu, utilizando DBeaver como cliente SQL.
 
--- 4. Tabla: Citas
-CREATE TABLE IF NOT EXISTS citas (
-id INT AUTO_INCREMENT PRIMARY KEY,
-paciente_id INT NOT NULL,
-odontologo_id INT NOT NULL,
-sillon_id INT,
-fecha_inicio DATETIME NOT NULL,
-fecha_fin DATETIME NOT NULL,
-motivo TEXT,
-estado VARCHAR(50) DEFAULT 'PENDIENTE',
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-FOREIGN KEY (paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE,
-FOREIGN KEY (odontologo_id) REFERENCES odontologos(id) ON DELETE CASCADE,
-FOREIGN KEY (sillon_id) REFERENCES sillones(id) ON DELETE SET NULL
-);
+---
 
--- 5. Tabla: Historias Clínicas
-CREATE TABLE IF NOT EXISTS historias_clinicas (
-id INT AUTO_INCREMENT PRIMARY KEY,
-paciente_id INT NOT NULL UNIQUE,
-nombre VARCHAR(100) NOT NULL,
-descripcion TEXT,
-is_active BOOLEAN DEFAULT TRUE,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-FOREIGN KEY (paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE
-);
+### Paso a Paso: Creación de Entidades
 
--- 6. Tabla: Planes de Tratamiento
-CREATE TABLE IF NOT EXISTS planes_tratamiento (
-id INT AUTO_INCREMENT PRIMARY KEY,
-paciente_id INT NOT NULL,
-nombre VARCHAR(100) NOT NULL,
-descripcion TEXT,
-is_active BOOLEAN DEFAULT TRUE,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-FOREIGN KEY (paciente_id) REFERENCES pacientes(id) ON DELETE CASCADE
-);
+#### 1. Tabla `pacientes`
+Almacena la información personal básica y de identificación del paciente.
+* **Campos:** `id`, `tipo_documento`, `numero_documento` (UQ), `nombre`, `fecha_nacimiento`, `is_active`, `created_at`, `updated_at`.
 
--- 7. Tabla: Procedimientos
-CREATE TABLE IF NOT EXISTS procedimientos (
-id INT AUTO_INCREMENT PRIMARY KEY,
-nombre VARCHAR(100) NOT NULL,
-descripcion TEXT,
-is_active BOOLEAN DEFAULT TRUE,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+![Creación Tabla Pacientes](img/1.png)
 
--- 8. Tabla: Detalles de Tratamiento
-CREATE TABLE IF NOT EXISTS detalles_tratamiento (
-id INT AUTO_INCREMENT PRIMARY KEY,
-cabecera_id INT NOT NULL,
-item_id INT NOT NULL,
-cantidad INT NOT NULL DEFAULT 1,
-valor_unitario DECIMAL(10, 2) NOT NULL,
-total DECIMAL(10, 2) NOT NULL,
-observacion TEXT,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-FOREIGN KEY (cabecera_id) REFERENCES planes_tratamiento(id) ON DELETE CASCADE,
-FOREIGN KEY (item_id) REFERENCES procedimientos(id) ON DELETE RESTRICT
-);
+---
 
--- 9. Tabla: Sesiones Clínicas
-CREATE TABLE IF NOT EXISTS sesiones_clinicas (
-id INT AUTO_INCREMENT PRIMARY KEY,
-referencia_id INT,
-fecha_inicio DATETIME NOT NULL,
-fecha_fin DATETIME NOT NULL,
-total DECIMAL(10, 2) DEFAULT 0.00,
-estado VARCHAR(50) DEFAULT 'COMPLETADA',
-observaciones TEXT,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-FOREIGN KEY (referencia_id) REFERENCES citas(id) ON DELETE SET NULL
-);
+#### 2. Tabla `odontologos`
+Registro de los profesionales de la salud dental encargados de la atención.
+* **Campos:** `id`, `nombre`, `descripcion`, `is_active`, `created_at`, `updated_at`.
 
--- 10. Tabla: Pagos
-CREATE TABLE IF NOT EXISTS pagos (
-id INT AUTO_INCREMENT PRIMARY KEY,
-referencia_tipo VARCHAR(50) NOT NULL DEFAULT 'PLAN_TRATAMIENTO',
-referencia_id INT NOT NULL,
-metodo VARCHAR(50) NOT NULL,
-monto DECIMAL(10, 2) NOT NULL,
-fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-estado VARCHAR(50) DEFAULT 'COMPLETADO',
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-FOREIGN KEY (referencia_id) REFERENCES planes_tratamiento(id) ON DELETE CASCADE
-);
+![Creación Tabla Odontólogos](img/2.png)
+
+---
+
+#### 3. Tabla `sillones`
+Gestión de recursos físicos y consultorios para la programación de citas.
+* **Campos:** `id`, `nombre`, `descripcion`, `is_active`, `created_at`, `updated_at`.
+
+![Creación Tabla Sillones](img/3.png)
+
+---
+
+#### 4. Tabla `citas`
+Agendamiento de atenciones vinculando paciente, odontólogo y sillón reservado.
+* **Campos:** `id`, `paciente_id` (FK), `odontologo_id` (FK), `sillon_id` (FK), `fecha_inicio`, `fecha_fin`, `motivo`, `estado`, `created_at`, `updated_at`.
+
+![Creación Tabla Citas](img/4.png)
+
+---
+
+#### 5. Tabla `historias_clinicas`
+Antecedentes y registro clínico permanente vinculado 1:1 con el paciente.
+* **Campos:** `id`, `paciente_id` (FK, UQ), `nombre`, `descripcion`, `is_active`, `created_at`, `updated_at`.
+
+![Creación Tabla Historias Clínicas](img/5.png)
+
+---
+
+#### 6. Tabla `planes_tratamiento`
+Planes de tratamiento propuestos y asignados a cada paciente (relación 1:N).
+* **Campos:** `id`, `paciente_id` (FK), `nombre`, `descripcion`, `is_active`, `created_at`, `updated_at`.
+
+![Creación Tabla Planes de Tratamiento](img/6.png)
+
+---
+
+#### 7. Tabla `procedimientos`
+Catálogo general de procedimientos odontológicos ofertados.
+* **Campos:** `id`, `nombre`, `descripcion`, `is_active`, `created_at`, `updated_at`.
+
+![Creación Tabla Procedimientos](img/7.png)
+
+---
+
+#### 8. Tabla `detalles_tratamiento`
+Detalle de los procedimientos específicos incluidos en un plan de tratamiento.
+* **Campos:** `id`, `cabecera_id` (FK), `item_id` (FK), `cantidad`, `valor_unitario`, `total`, `observacion`, `created_at`, `updated_at`.
+
+![Creación Tabla Detalles Tratamiento](img/8.png)
+
+---
+
+#### 9. Tabla `sesiones_clinicas`
+Registro de atenciones o sesiones ejecutadas vinculadas a la cita correspondiente.
+* **Campos:** `id`, `referencia_id` (FK), `fecha_inicio`, `fecha_fin`, `total`, `estado`, `observaciones`, `created_at`, `updated_at`.
+
+![Creación Tabla Sesiones Clínicas](img/9.png)
+
+---
+
+#### 10. Tabla `pagos`
+Registro financiero de transacciones y abonos aplicados a los planes de tratamiento.
+* **Campos:** `id`, `referencia_tipo`, `referencia_id` (FK), `metodo`, `monto`, `fecha`, `estado`, `created_at`, `updated_at`.
+
+![Creación Tabla Pagos](img/10.png)
+
+---
+
+## Vista General del Esquema Creado
+
+A continuación se evidencia el listado completo de las 10 tablas creadas e integradas dentro de la base de datos `odontonova_db`:
+
+![Vista general de las 10 tablas](img/tablas.png)
