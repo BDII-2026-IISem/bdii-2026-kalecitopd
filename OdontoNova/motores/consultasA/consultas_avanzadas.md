@@ -361,4 +361,5 @@ FROM sesiones_clinicas WHERE estado = 'COMPLETADA';
 ```
 
 ![Resultado Consulta 19](img/19.png)
+
 EOF
