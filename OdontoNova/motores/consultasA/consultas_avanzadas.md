@@ -25,7 +25,7 @@
 ## 1. Consultas avanzadas en MySQL :
 
 #### 1.1 Mostrar algunos de los registros de la tabla pacientes
-```sql
+sql
 SELECT nombre, tipo_documento, numero_documento, is_active 
 FROM pacientes 
 LIMIT 5;
