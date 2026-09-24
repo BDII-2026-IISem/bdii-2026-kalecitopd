@@ -82,3 +82,4 @@ WHERE P.id NOT IN (
     FROM citas AS C 
     WHERE C.fecha_inicio BETWEEN '2026-03-01' AND '2026-03-31'
 );
+
