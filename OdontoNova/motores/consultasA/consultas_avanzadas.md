@@ -362,7 +362,7 @@ FROM sesiones_clinicas WHERE estado = 'COMPLETADA';
 
 ![Resultado Consulta 19](img/19.png)
 
-###Consulta 20: Citas con detalles de paciente y odontólogo
+### Consulta 20: Citas con detalles de paciente y odontólogo
 
 ```sql
 SELECT c.id AS cita_id, p.nombre AS paciente, o.nombre AS odontologo
@@ -373,7 +373,7 @@ JOIN odontologos o ON c.odontologo_id = o.id;
 
 ![Resultado Consulta 20](img/20.png)
 
-###Consulta 21: Pacientes filtrados por fecha de nacimiento (nacidos desde 2010)
+### Consulta 21: Pacientes filtrados por fecha de nacimiento (nacidos desde 2010)
 
 ```sql
 SELECT nombre, numero_documento, fecha_nacimiento, is_active
@@ -383,7 +383,7 @@ WHERE fecha_nacimiento >= '2010-01-01';
 
 ![Resultado Consulta 21](img/21.png)
 
-###Consulta 22: Registro y estado general de las citas
+### Consulta 22: Registro y estado general de las citas
 
 ```sql
 SELECT id, paciente_id, fecha_inicio, estado
@@ -392,7 +392,7 @@ FROM citas;
 
 ![Resultado Consulta 22](img/22.png)
 
-###Consulta 23: Conteo total de citas agrupadas por estado
+### Consulta 23: Conteo total de citas agrupadas por estado
 
 ```sql
 SELECT estado, COUNT(id) AS total_citas
@@ -402,7 +402,7 @@ GROUP BY estado;
 
 ![Resultado Consulta 23](img/23.png)
 
-###Consulta 24: Búsqueda de odontólogos por patrón de texto (contienen la letra "a")
+### Consulta 24: Búsqueda de odontólogos por patrón de texto (contienen la letra "a")
 
 ```sql
 SELECT id, nombre
@@ -412,7 +412,7 @@ WHERE nombre ILIKE '%a%';
 
 ![Resultado Consulta 24](img/24.png)
 
-###Consulta 25: Búsqueda de pacientes inactivos
+### Consulta 25: Búsqueda de pacientes inactivos
 
 ```sql
 SELECT id, numero_documento, nombre
