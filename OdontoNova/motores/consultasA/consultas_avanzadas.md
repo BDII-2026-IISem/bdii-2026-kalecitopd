@@ -416,8 +416,215 @@ WHERE is_active = false;
 
 ![Resultado Consulta 25](img/25.png)
 
+---
 
+### 3. Consultas avanzadas en MySQL :
 
+### Consulta 1: Mostrar registros de la tabla pacientes
+
+```sql
+SELECT nombre, tipo_documento, numero_documento, is_active FROM pacientes;
+```
+
+![Resultado Consulta 1](img/26.png)
+
+### Consulta 2: Consultas a múltiples tablas mediante WHERE
+
+```sql
+SELECT *
+FROM citas c, pacientes p
+WHERE p.id = c.paciente_id;
+```
+
+![Resultado Consulta 2](img/27.png)
+
+### Consulta 3: Condiciones o filtros en las consultas (WHERE implícito)
+
+```sql
+SELECT *
+FROM citas c, pacientes p
+WHERE p.id = c.paciente_id AND c.estado = 'programada';
+```
+
+![Resultado Consulta 3](img/28.png)
+
+### Consulta 4: Mostrar de forma ordenada las citas (DESC)
+
+```sql
+SELECT id, fecha_inicio, estado
+FROM citas
+ORDER BY fecha_inicio DESC;
+```
+
+![Resultado Consulta 4](img/29.png)
+
+### Consulta 5: Consultas a múltiples tablas mediante JOIN (Básico)
+
+```sql
+SELECT P.nombre, P.numero_documento, C.*
+FROM pacientes as P
+JOIN citas as C on( P.id = C.paciente_id );
+```
+
+![Resultado Consulta 5](img/30.png)
+
+### Consulta 6: Consultas a múltiples tablas mediante JOIN (Con condición de estado)
+
+```sql
+SELECT P.nombre, P.numero_documento, C.*
+FROM pacientes as P
+JOIN citas as C on( P.id = C.paciente_id )
+WHERE C.estado = 'completada';
+```
+
+![Resultado Consulta 6](img/31.png)
+
+### Consulta 7: Consultas con filtro condicional LIKE (Empieza con 'M')
+
+```sql
+SELECT *
+FROM pacientes as P
+WHERE P.nombre LIKE 'm%';
+```
+
+![Resultado Consulta 7](img/32.png)
+
+### Consulta 8: Consultas con filtro condicional LIKE (Contiene un nombre específico)
+
+```sql
+SELECT *
+FROM pacientes as P
+WHERE P.nombre LIKE CONCAT('%','maria','%');
+```
+
+![Resultado Consulta 8](img/33.png)
+
+### Consulta 9: Combinación de WHERE y LIKE
+
+```sql
+SELECT P.nombre, P.numero_documento, C.*
+FROM pacientes as P
+JOIN citas as C on( P.id = C.paciente_id )
+WHERE C.estado = 'programada' AND P.nombre LIKE 'm%';
+```
+
+![Resultado Consulta 9](img/34.png)
+
+### Consulta 10: Consultas con filtros condicionales BETWEEN (Fechas de pago)
+
+```sql
+SELECT P.nombre, P.numero_documento, C.fecha_inicio, C.estado, PAG.fecha, O.nombre AS odontologo
+FROM pacientes P
+JOIN citas C ON P.id = C.paciente_id
+JOIN pagos PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
+JOIN odontologos O ON O.id = C.odontologo_id
+WHERE PAG.fecha BETWEEN '2025-01-01 00:00:00' AND '2026-12-31 23:59:59'
+ORDER BY PAG.fecha ASC;
+```
+
+![Resultado Consulta 10](img/35.png)
+
+### Consulta 11: Consultas con filtros condicionales BETWEEN (Fechas de cita)
+
+```sql
+SELECT P.nombre, P.numero_documento, C.fecha_inicio, C.estado, PAG.fecha, O.nombre AS odontologo
+FROM pacientes P, citas C, pagos PAG, odontologos O
+WHERE P.id = C.paciente_id
+  AND C.id = PAG.referencia_id
+  AND PAG.referencia_tipo = 'Cita'
+  AND O.id = C.odontologo_id
+  AND C.fecha_inicio BETWEEN '2025-01-01' AND '2026-12-31'
+ORDER BY PAG.fecha ASC;
+```
+
+![Resultado Consulta 11](img/36.png)
+
+### Consulta 12: Consultas con agrupamiento GROUP BY (General)
+
+```sql
+SELECT P.id, P.nombre, SUM(PAG.monto) AS TotalSuma,
+       COUNT(PAG.id) AS CuentaTotal,
+       AVG(PAG.monto) AS Promedio
+FROM pacientes AS P
+JOIN citas AS C ON P.id = C.paciente_id
+JOIN pagos AS PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
+WHERE PAG.fecha BETWEEN '2025-01-01 00:00:00' AND '2026-12-31 23:59:59'
+GROUP BY P.id, P.nombre
+ORDER BY TotalSuma DESC;
+```
+
+![Resultado Consulta 12](img/37.png)
+
+### Consulta 13: Consultas con agrupamiento GROUP BY (Filtrando por método)
+
+```sql
+SELECT P.id, P.nombre, SUM(PAG.monto) AS TotalGasto,
+       COUNT(PAG.id) AS CantidadPagos
+FROM pacientes AS P
+JOIN citas AS C ON P.id = C.paciente_id
+JOIN pagos AS PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
+WHERE PAG.estado = 'pagado' AND PAG.metodo = 'tarjeta'
+GROUP BY P.id, P.nombre
+ORDER BY TotalGasto DESC;
+```
+
+![Resultado Consulta 13](img/38.png)
+
+### Consulta 14: Consultas con agrupamiento HAVING (Suma de pagos)
+
+```sql
+SELECT P.id, P.nombre, SUM(PAG.monto) AS TotalSuma,
+       AVG(PAG.monto) AS PromedioPago
+FROM pacientes AS P
+JOIN citas AS C ON P.id = C.paciente_id
+JOIN pagos AS PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
+GROUP BY P.id, P.nombre
+HAVING SUM(PAG.monto) >= 50000
+ORDER BY TotalSuma DESC;
+```
+
+![Resultado Consulta 14](img/39.png)
+
+### Consulta 15: Consultas con agrupamiento HAVING (Combinado)
+
+```sql
+SELECT P.id, P.nombre, P.numero_documento, SUM(PAG.monto) AS TotalAnual,
+       COUNT(PAG.id) AS TotalPagos
+FROM pacientes AS P
+JOIN citas AS C ON P.id = C.paciente_id
+JOIN pagos AS PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
+WHERE PAG.fecha BETWEEN '2025-01-01 00:00:00' AND '2026-12-31 23:59:59'
+GROUP BY P.id, P.nombre, P.numero_documento
+HAVING COUNT(PAG.id) >= 1 AND SUM(PAG.monto) >= 50000
+ORDER BY TotalAnual DESC;
+```
+
+![Resultado Consulta 15](img/40.png)
+
+### Consulta 16: Subconsultas y teoría de conjuntos (Con NOT IN)
+
+```sql
+SELECT *
+FROM pacientes as P
+WHERE P.id NOT IN (
+    SELECT C.paciente_id
+    FROM citas as C
+    WHERE C.fecha_inicio BETWEEN '2025-01-01' AND '2026-12-31'
+);
+```
+
+![Resultado Consulta 16](img/41.png)
+
+### Consulta 17: Subconsultas y teoría de conjuntos (Con LEFT JOIN)
+
+```sql
+SELECT *
+FROM pacientes as P
+LEFT JOIN citas as C ON(P.id = C.paciente_id AND C.fecha_inicio BETWEEN '2025-01-01' AND '2026-12-31')
+WHERE C.paciente_id IS NULL;
+```
+
+![Resultado Consulta 17](img/42.png)
 
 
 
