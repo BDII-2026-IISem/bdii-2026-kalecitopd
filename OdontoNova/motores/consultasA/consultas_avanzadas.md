@@ -189,7 +189,7 @@ INSERT INTO pagos (referencia_tipo, referencia_id, metodo, monto, fecha, estado,
 
 ---
 
-## 🔍 2. Compendio de las 19 Consultas SQL y Resultados
+### 2. Consultas avanzadas en PostgreSQL : 
 
 ### Consulta 1: Listar todas las citas con nombres de pacientes y odontólogos
 
@@ -362,4 +362,66 @@ FROM sesiones_clinicas WHERE estado = 'COMPLETADA';
 
 ![Resultado Consulta 19](img/19.png)
 
+###Consulta 20: Citas con detalles de paciente y odontólogo
+```sql
+SELECT c.id AS cita_id, p.nombre AS paciente, o.nombre AS odontologo
+FROM citas c 
+JOIN pacientes p ON c.paciente_id = p.id 
+JOIN odontologos o ON c.odontologo_id = o.id;
+```
+
+![Resultado Consulta 20](img/20.png)
+
+###Consulta 21: Pacientes filtrados por fecha de nacimiento (nacidos desde 2010)
+```sql
+SELECT nombre, numero_documento, fecha_nacimiento, is_active
+FROM pacientes 
+WHERE fecha_nacimiento >= '2010-01-01';
+```
+
+![Resultado Consulta 21](img/21.png)
+
+###Consulta 22: Registro y estado general de las citas
+```sql
+SELECT id, paciente_id, fecha_inicio, estado
+FROM citas;
+```
+
+![Resultado Consulta 22](img/22.png)
+
+###Consulta 23: Conteo total de citas agrupadas por estado
+```sql
+SELECT estado, COUNT(id) AS total_citas
+FROM citas 
+GROUP BY estado;
+```
+
+![Resultado Consulta 23](img/23.png)
+
+###Consulta 24: Búsqueda de odontólogos por patrón de texto (contienen la letra "a")
+```sql
+SELECT id, nombre
+FROM odontologos
+WHERE nombre ILIKE '%a%';
+```
+
+![Resultado Consulta 24](img/24.png)
+
+###Consulta 25: Búsqueda de pacientes inactivos
+```sql
+SELECT id, numero_documento, nombre
+FROM pacientes
+WHERE is_active = false;
+```
+
+![Resultado Consulta 25](img/25.png)
+
+
+
+
+
+
+
+
 EOF
+
