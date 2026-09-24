@@ -1,70 +1,100 @@
-Módulo de Consultas y Reportes - OdontoNova
+# Proyecto 19: OdontoNova - Gestión Odontológica
 
-Este directorio contiene las consultas SQL analíticas, reportes operativos y cruces multitabla diseñados para la gestión integral del sistema OdontoNova. Estas consultas permiten extraer información clave sobre citas, pacientes, pagos y tratamientos.
+## Descripción del Proyecto
+OdontoNova es una solución integral orientada a la gestión clínica y administrativa odontológica. Integrará reserva de agenda, control de historias clínicas, planes de tratamiento, seguimiento de sesiones clínicas y administración de pagos.
 
-📋 Consultas Clave Implementadas
+---
 
-1. Listado completo de citas con detalles cruzados
+## Estructura y Creación de la Base de Datos
 
-Permite visualizar todas las citas programadas relacionando la información del paciente, el odontólogo asignado y el sillón odontológico correspondiente mediante múltiples operaciones INNER JOIN.
+La base de datos `odontonova_db` se construyó en **SQL Server 2022** desplegado mediante Docker bajo entorno WSL/Ubuntu, utilizando DBeaver como cliente SQL.
 
-SELECT 
-    c.id AS cita_id,
-    p.nombre AS paciente,
-    o.nombre AS odontologo,
-    s.codigo AS sillon,
-    c.fecha_inicio,
-    c.fecha_fin,
-    c.motivo,
-    c.estado
-FROM citas c
-INNER JOIN pacientes p ON c.paciente_id = p.id
-INNER JOIN odontologos o ON c.odontologo_id = o.id
-INNER JOIN sillones s ON c.sillon_id = s.id;
+---
 
+### Paso a Paso: Creación de Entidades
 
-2. Reporte financiero de recaudación por método de pago
+#### 1. Tabla `pacientes`
+Almacena la información personal básica y de identificación del paciente.
+* **Campos:** `id`, `tipo_documento`, `numero_documento` (UQ), `nombre`, `fecha_nacimiento`, `is_active`, `created_at`, `updated_at`.
 
-Agrupa los pagos completados por método, calculando el volumen total de transacciones, la recaudación acumulada y el promedio por transacción utilizando funciones de agregación (COUNT, SUM, AVG) y agrupamiento (GROUP BY).
+![Creación Tabla Pacientes](img/1.png)
 
-SELECT 
-    metodo AS metodo_pago,
-    COUNT(id) AS total_transacciones,
-    SUM(monto) AS recaudacion_total,
-    AVG(monto) AS promedio_monto
-FROM pagos
-WHERE estado = 'Completado'
-GROUP BY metodo;
+---
 
+#### 2. Tabla `odontologos`
+Registro de los profesionales de la salud dental encargados de la atención.
+* **Campos:** `id`, `nombre`, `descripcion`, `is_active`, `created_at`, `updated_at`.
 
-3. Historial detallado de tratamientos por paciente
+![Creación Tabla Odontólogos](img/2.png)
 
-Cruza la información de los planes de tratamiento, los procedimientos realizados, los detalles económicos y los datos personales del paciente para un seguimiento clínico y administrativo preciso.
+---
 
-SELECT 
-    p.nombre AS paciente,
-    pt.nombre AS plan_tratamiento,
-    pr.nombre AS procedimiento_realizado,
-    dt.cantidad,
-    dt.valor_unitario,
-    dt.total
-FROM detalles_tratamiento dt
-INNER JOIN planes_tratamiento pt ON dt.cabecera_id = pt.id
-INNER JOIN pacientes p ON pt.paciente_id = p.id
-INNER JOIN procedimientos pr ON dt.item_id = pr.id
-WHERE p.id = 1;
+#### 3. Tabla `sillones`
+Gestión de recursos físicos y consultorios para la programación de citas.
+* **Campos:** `id`, `nombre`, `descripcion`, `is_active`, `created_at`, `updated_at`.
 
+![Creación Tabla Sillones](img/3.png)
 
-4. Resumen de historias clínicas y antecedentes médicos
+---
 
-Consulta los datos de las historias clínicas vinculados directamente con la información de identificación y perfil básico de cada paciente.
+#### 4. Tabla `citas`
+Agendamiento de atenciones vinculando paciente, odontólogo y sillón reservado.
+* **Campos:** `id`, `paciente_id` (FK), `odontologo_id` (FK), `sillon_id` (FK), `fecha_inicio`, `fecha_fin`, `motivo`, `estado`, `created_at`, `updated_at`.
 
-SELECT 
-    hc.id AS historia_id,
-    p.nombre AS paciente,
-    p.numero_documento,
-    hc.grupo_sanguineo,
-    hc.alergias,
-    hc.antecedentes
-FROM historias_clinicas hc
-INNER JOIN pacientes p ON hc.paciente_id = p.id;
+![Creación Tabla Citas](img/4.png)
+
+---
+
+#### 5. Tabla `historias_clinicas`
+Antecedentes y registro clínico permanente vinculado 1:1 con el paciente.
+* **Campos:** `id`, `paciente_id` (FK, UQ), `nombre`, `descripcion`, `is_active`, `created_at`, `updated_at`.
+
+![Creación Tabla Historias Clínicas](img/5.png)
+
+---
+
+#### 6. Tabla `planes_tratamiento`
+Planes de tratamiento propuestos y asignados a cada paciente (relación 1:N).
+* **Campos:** `id`, `paciente_id` (FK), `nombre`, `descripcion`, `is_active`, `created_at`, `updated_at`.
+
+![Creación Tabla Planes de Tratamiento](img/6.png)
+
+---
+
+#### 7. Tabla `procedimientos`
+Catálogo general de procedimientos odontológicos ofertados.
+* **Campos:** `id`, `nombre`, `descripcion`, `is_active`, `created_at`, `updated_at`.
+
+![Creación Tabla Procedimientos](img/7.png)
+
+---
+
+#### 8. Tabla `detalles_tratamiento`
+Detalle de los procedimientos específicos incluidos en un plan de tratamiento.
+* **Campos:** `id`, `cabecera_id` (FK), `item_id` (FK), `cantidad`, `valor_unitario`, `total`, `observacion`, `created_at`, `updated_at`.
+
+![Creación Tabla Detalles Tratamiento](img/8.png)
+
+---
+
+#### 9. Tabla `sesiones_clinicas`
+Registro de atenciones o sesiones ejecutadas vinculadas a la cita correspondiente.
+* **Campos:** `id`, `referencia_id` (FK), `fecha_inicio`, `fecha_fin`, `total`, `estado`, `observaciones`, `created_at`, `updated_at`.
+
+![Creación Tabla Sesiones Clínicas](img/9.png)
+
+---
+
+#### 10. Tabla `pagos`
+Registro financiero de transacciones y abonos aplicados a los planes de tratamiento.
+* **Campos:** `id`, `referencia_tipo`, `referencia_id` (FK), `metodo`, `monto`, `fecha`, `estado`, `created_at`, `updated_at`.
+
+![Creación Tabla Pagos](img/10.png)
+
+---
+
+## Vista General del Esquema Creado
+
+A continuación se evidencia el listado completo de las 10 tablas creadas e integradas dentro de la base de datos `odontonova_db`:
+
+![Vista general de las 10 tablas](img/tablas.png)
