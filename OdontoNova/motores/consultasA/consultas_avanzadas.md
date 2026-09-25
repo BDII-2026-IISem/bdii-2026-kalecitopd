@@ -841,5 +841,75 @@ WHERE C.paciente_id IS NULL;
 ```
 
 ![Resultado Consulta 17](img/42.png)
+
+---
+
+### 2. Consultas avanzadas en Oracle :
+
+### Consulta 1: Consultar pacientes
+
+```sql
+SELECT *
+FROM PACIENTES;
+```
+
+![Resultado Consulta 1](img/53.png)
+
+### Consulta 2: Consultar odontólogos
+
+```sql
+SELECT NOMBRE, ESPECIALIDAD, TELEFONO, EMAIL
+FROM ODONTOLOGOS;
+```
+
+![Resultado Consulta 2](img/54.png)
+
+### Consulta 3: Consultar tratamientos ordenados por precio
+
+```sql
+SELECT NOMBRE, DESCRIPCION, PRECIO
+FROM TRATAMIENTOS
+ORDER BY PRECIO DESC;
+```
+
+![Resultado Consulta 3](img/55.png)
+
+### Consulta 4: Consultar citas con paciente y odontólogo (JOIN)
+
+```sql
+SELECT
+    C.ID,
+    P.NOMBRE AS PACIENTE,
+    O.NOMBRE AS ODONTOLOGO,
+    C.FECHA_INICIO,
+    C.FECHA_FIN,
+    C.MOTIVO,
+    C.ESTADO
+FROM CITAS C
+INNER JOIN PACIENTES P
+    ON C.PACIENTE_ID = P.ID
+INNER JOIN ODONTOLOGOS O
+    ON C.ODONTOLOGO_ID = O.ID;
+```
+
+![Resultado Consulta 4](img/56.png)
+
+### Consulta 5: Consultar pagos con estado 'PAGADO' ordenados por monto
+
+```sql
+SELECT
+    P.ID,
+    P.REFERENCIA_TIPO,
+    P.REFERENCIA_ID,
+    P.METODO,
+    P.MONTO,
+    P.FECHA,
+    P.ESTADO
+FROM PAGOS P
+WHERE P.ESTADO = 'PAGADO'
+ORDER BY P.MONTO DESC;
+```
+
+![Resultado Consulta 5](img/57.png)
 EOF
 
