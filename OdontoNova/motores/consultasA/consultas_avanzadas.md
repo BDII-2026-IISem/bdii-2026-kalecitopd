@@ -844,7 +844,7 @@ WHERE C.paciente_id IS NULL;
 
 ---
 
-### 2. Consultas avanzadas en Oracle :
+### 5. Consultas avanzadas en Oracle :
 
 ### Consulta 1: Consultar pacientes
 
@@ -911,5 +911,10 @@ ORDER BY P.MONTO DESC;
 ```
 
 ![Resultado Consulta 5](img/57.png)
+
+## CONCLUSIÓN
+
+Con este proyecto entendí que trabajar con bases de datos va mucho más allá de escribir consultas sueltas, lo importante fue aprender a modelar el negocio de una clínica odontológica en tablas relacionadas y a moverme entre distintos motores (MySQL, SQL Server y Oracle) sin perder la lógica del problema. Resolver cosas como listar citas con su paciente y odontólogo, calcular totales de pagos por paciente o encontrar pacientes sin citas me mostró que un mismo requerimiento se puede lograr de varias maneras —con joins, agrupaciones, subconsultas o condiciones anidadas—, y que elegir la más clara y eficiente es parte del oficio.
+
 EOF
 
