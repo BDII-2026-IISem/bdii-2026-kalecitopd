@@ -1,4 +1,3 @@
-cat << 'EOF' > documentacion_odontonova.md
 # Documentación del Sistema OdontoNova
 
 Este documento contiene la estructura de inserción de datos para las 10 tablas del sistema y el compendio de las 19 consultas SQL utilizadas en PostgreSQL, acompañadas de sus respectivas evidencias visuales.
@@ -636,211 +635,136 @@ WHERE C.paciente_id IS NULL;
 
 ### 4. Consultas avanzadas en MSSQL :
 
-### Consulta 1: Mostrar registros de la tabla pacientes
+### Consulta 1: Consultar pacientes
 
 ```sql
-SELECT nombre, tipo_documento, numero_documento, is_active FROM pacientes;
+SELECT * FROM paciente;
 ```
 
-![Resultado Consulta 1](img/26.png)
+![Resultado Consulta 1](img/43.png)
 
-### Consulta 2: Consultas a múltiples tablas mediante WHERE
+### Consulta 2: Consultar historias clínicas
 
 ```sql
-SELECT *
-FROM citas c, pacientes p
-WHERE p.id = c.paciente_id;
+SELECT * FROM historia_clinica;
 ```
 
-![Resultado Consulta 2](img/27.png)
+![Resultado Consulta 2](img/44.png)
 
-### Consulta 3: Condiciones o filtros en las consultas (WHERE implícito)
+### Consulta 3: Consultar odontólogos
 
 ```sql
-SELECT *
-FROM citas c, pacientes p
-WHERE p.id = c.paciente_id AND c.estado = 'programada';
+SELECT * FROM odontologo;
 ```
 
-![Resultado Consulta 3](img/28.png)
+![Resultado Consulta 3](img/45.png)
 
-### Consulta 4: Mostrar de forma ordenada las citas (DESC)
+### Consulta 4: Consultar sillones
 
 ```sql
-SELECT id, fecha_inicio, estado
-FROM citas
-ORDER BY fecha_inicio DESC;
+SELECT * FROM sillon;
 ```
 
-![Resultado Consulta 4](img/29.png)
+![Resultado Consulta 4](img/46.png)
 
-### Consulta 5: Consultas a múltiples tablas mediante JOIN (Básico)
+### Consulta 5: Consultar citas con información detallada (JOIN)
 
 ```sql
-SELECT P.nombre, P.numero_documento, C.*
-FROM pacientes as P
-JOIN citas as C on( P.id = C.paciente_id );
+SELECT 
+    c.id AS id_cita,
+    p.nombre AS paciente,
+    o.nombre AS odontologo,
+    s.nombre AS sillon,
+    c.fecha_inicio,
+    c.fecha_fin,
+    c.motivo,
+    c.estado
+FROM cita c
+JOIN paciente p ON c.id_paciente = p.id
+JOIN odontologo o ON c.id_odontologo = o.id
+JOIN sillon s ON c.id_sillon = s.id;
 ```
 
-![Resultado Consulta 5](img/30.png)
+![Resultado Consulta 5](img/47.png)
 
-### Consulta 6: Consultas a múltiples tablas mediante JOIN (Con condición de estado)
+### Consulta 6: Consultar planes de tratamiento por paciente
 
 ```sql
-SELECT P.nombre, P.numero_documento, C.*
-FROM pacientes as P
-JOIN citas as C on( P.id = C.paciente_id )
-WHERE C.estado = 'completada';
+SELECT 
+    pt.id AS id_plan,
+    p.nombre AS paciente,
+    pt.nombre AS nombre_plan,
+    pt.descripcion,
+    pt.is_active
+FROM plan_tratamiento pt
+JOIN paciente p ON pt.id_paciente = p.id;
 ```
 
-![Resultado Consulta 6](img/31.png)
+![Resultado Consulta 6](img/48.png)
 
-### Consulta 7: Consultas con filtro condicional LIKE (Empieza con 'M')
+### Consulta 7: Consultar procedimientos disponibles
 
 ```sql
-SELECT *
-FROM pacientes as P
-WHERE P.nombre LIKE 'm%';
+SELECT * FROM procedimiento;
 ```
 
-![Resultado Consulta 7](img/32.png)
+![Resultado Consulta 7](img/49.png)
 
-### Consulta 8: Consultas con filtro condicional LIKE (Contiene un nombre específico)
+### Consulta 8: Consultar detalles de tratamiento
 
 ```sql
-SELECT *
-FROM pacientes as P
-WHERE P.nombre LIKE CONCAT('%','maria','%');
+SELECT 
+    dt.id,
+    pt.nombre AS plan_tratamiento,
+    pr.nombre AS procedimiento,
+    dt.cantidad,
+    dt.valor_unitario,
+    dt.total,
+    dt.observaciones
+FROM detalle_tratamiento dt
+JOIN plan_tratamiento pt ON dt.cabecera_id = pt.id
+JOIN procedimiento pr ON dt.item_id = pr.id;
 ```
 
-![Resultado Consulta 8](img/33.png)
+![Resultado Consulta 8](img/50.png)
 
-### Consulta 9: Combinación de WHERE y LIKE
+### Consulta 9: Consultar sesiones clínicas vinculadas a citas
 
 ```sql
-SELECT P.nombre, P.numero_documento, C.*
-FROM pacientes as P
-JOIN citas as C on( P.id = C.paciente_id )
-WHERE C.estado = 'programada' AND P.nombre LIKE 'm%';
+SELECT 
+    sc.id AS id_sesion,
+    sc.referencia_id AS id_cita,
+    p.nombre AS paciente,
+    sc.fecha_inicio,
+    sc.fecha_fin,
+    sc.total,
+    sc.estado,
+    sc.observaciones
+FROM sesion_clinica sc
+JOIN cita c ON sc.referencia_id = c.id
+JOIN paciente p ON c.id_paciente = p.id;
 ```
 
-![Resultado Consulta 9](img/34.png)
+![Resultado Consulta 9](img/51.png)
 
-### Consulta 10: Consultas con filtros condicionales BETWEEN (Fechas de pago)
+### Consulta 10: Consultar pagos realizados
 
 ```sql
-SELECT P.nombre, P.numero_documento, C.fecha_inicio, C.estado, PAG.fecha, O.nombre AS odontologo
-FROM pacientes P
-JOIN citas C ON P.id = C.paciente_id
-JOIN pagos PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
-JOIN odontologos O ON O.id = C.odontologo_id
-WHERE PAG.fecha BETWEEN '2025-01-01 00:00:00' AND '2026-12-31 23:59:59'
-ORDER BY PAG.fecha ASC;
+SELECT 
+    pg.id AS id_pago,
+    pg.referencia_tipo,
+    pt.nombre AS plan_asociado,
+    p.nombre AS paciente,
+    pg.metodo,
+    pg.monto,
+    pg.fecha,
+    pg.estado
+FROM pago pg
+JOIN plan_tratamiento pt ON pg.referencia_id = pt.id
+JOIN paciente p ON pt.id_paciente = p.id;
 ```
 
-![Resultado Consulta 10](img/35.png)
-
-### Consulta 11: Consultas con filtros condicionales BETWEEN (Fechas de cita)
-
-```sql
-SELECT P.nombre, P.numero_documento, C.fecha_inicio, C.estado, PAG.fecha, O.nombre AS odontologo
-FROM pacientes P, citas C, pagos PAG, odontologos O
-WHERE P.id = C.paciente_id
-  AND C.id = PAG.referencia_id
-  AND PAG.referencia_tipo = 'Cita'
-  AND O.id = C.odontologo_id
-  AND C.fecha_inicio BETWEEN '2025-01-01' AND '2026-12-31'
-ORDER BY PAG.fecha ASC;
-```
-
-![Resultado Consulta 11](img/36.png)
-
-### Consulta 12: Consultas con agrupamiento GROUP BY (General)
-
-```sql
-SELECT P.id, P.nombre, SUM(PAG.monto) AS TotalSuma,
-       COUNT(PAG.id) AS CuentaTotal,
-       AVG(PAG.monto) AS Promedio
-FROM pacientes AS P
-JOIN citas AS C ON P.id = C.paciente_id
-JOIN pagos AS PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
-WHERE PAG.fecha BETWEEN '2025-01-01 00:00:00' AND '2026-12-31 23:59:59'
-GROUP BY P.id, P.nombre
-ORDER BY TotalSuma DESC;
-```
-
-![Resultado Consulta 12](img/37.png)
-
-### Consulta 13: Consultas con agrupamiento GROUP BY (Filtrando por método)
-
-```sql
-SELECT P.id, P.nombre, SUM(PAG.monto) AS TotalGasto,
-       COUNT(PAG.id) AS CantidadPagos
-FROM pacientes AS P
-JOIN citas AS C ON P.id = C.paciente_id
-JOIN pagos AS PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
-WHERE PAG.estado = 'pagado' AND PAG.metodo = 'tarjeta'
-GROUP BY P.id, P.nombre
-ORDER BY TotalGasto DESC;
-```
-
-![Resultado Consulta 13](img/38.png)
-
-### Consulta 14: Consultas con agrupamiento HAVING (Suma de pagos)
-
-```sql
-SELECT P.id, P.nombre, SUM(PAG.monto) AS TotalSuma,
-       AVG(PAG.monto) AS PromedioPago
-FROM pacientes AS P
-JOIN citas AS C ON P.id = C.paciente_id
-JOIN pagos AS PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
-GROUP BY P.id, P.nombre
-HAVING SUM(PAG.monto) >= 50000
-ORDER BY TotalSuma DESC;
-```
-
-![Resultado Consulta 14](img/39.png)
-
-### Consulta 15: Consultas con agrupamiento HAVING (Combinado)
-
-```sql
-SELECT P.id, P.nombre, P.numero_documento, SUM(PAG.monto) AS TotalAnual,
-       COUNT(PAG.id) AS TotalPagos
-FROM pacientes AS P
-JOIN citas AS C ON P.id = C.paciente_id
-JOIN pagos AS PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
-WHERE PAG.fecha BETWEEN '2025-01-01 00:00:00' AND '2026-12-31 23:59:59'
-GROUP BY P.id, P.nombre, P.numero_documento
-HAVING COUNT(PAG.id) >= 1 AND SUM(PAG.monto) >= 50000
-ORDER BY TotalAnual DESC;
-```
-
-![Resultado Consulta 15](img/40.png)
-
-### Consulta 16: Subconsultas y teoría de conjuntos (Con NOT IN)
-
-```sql
-SELECT *
-FROM pacientes as P
-WHERE P.id NOT IN (
-    SELECT C.paciente_id
-    FROM citas as C
-    WHERE C.fecha_inicio BETWEEN '2025-01-01' AND '2026-12-31'
-);
-```
-
-![Resultado Consulta 16](img/41.png)
-
-### Consulta 17: Subconsultas y teoría de conjuntos (Con LEFT JOIN)
-
-```sql
-SELECT *
-FROM pacientes as P
-LEFT JOIN citas as C ON(P.id = C.paciente_id AND C.fecha_inicio BETWEEN '2025-01-01' AND '2026-12-31')
-WHERE C.paciente_id IS NULL;
-```
-
-![Resultado Consulta 17](img/42.png)
+![Resultado Consulta 10](img/52.png)
 
 ---
 
@@ -915,6 +839,3 @@ ORDER BY P.MONTO DESC;
 ## CONCLUSIÓN
 
 Con este proyecto entendí que trabajar con bases de datos va mucho más allá de escribir consultas sueltas, lo importante fue aprender a modelar el negocio de una clínica odontológica en tablas relacionadas y a moverme entre distintos motores (MySQL, SQL Server y Oracle) sin perder la lógica del problema. Resolver cosas como listar citas con su paciente y odontólogo, calcular totales de pagos por paciente o encontrar pacientes sin citas me mostró que un mismo requerimiento se puede lograr de varias maneras —con joins, agrupaciones, subconsultas o condiciones anidadas—, y que elegir la más clara y eficiente es parte del oficio.
-
-EOF
-
