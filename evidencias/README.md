@@ -16,7 +16,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q1_citas_completas();
 ```
 
-![Resultado Consulta 1](img/1.png)
+![Resultado Consulta 1](postgresql/1.png)
 
 ### Consulta 2: Ver historial clínico de un paciente específico
 
@@ -34,7 +34,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q2_historial_paciente(1);
 ```
 
-![Resultado Consulta 2](img/2.png)
+![Resultado Consulta 2](postgresql/2.png)
 
 ### Consulta 3: Consultar pagos ordenados por monto
 
@@ -50,7 +50,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q3_pagos_ordenados();
 ```
 
-![Resultado Consulta 3](img/3.png)
+![Resultado Consulta 3](postgresql/3.png)
 
 ### Consulta 4: Detalles de tratamiento y procedimientos aplicados
 
@@ -67,7 +67,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q4_detalles_tratamiento();
 ```
 
-![Resultado Consulta 4](img/4.png)
+![Resultado Consulta 4](postgresql/4.png)
 
 ### Consulta 5: Resumen financiero de pagos completados
 
@@ -83,7 +83,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q5_resumen_completados();
 ```
 
-![Resultado Consulta 5](img/5.png)
+![Resultado Consulta 5](postgresql/5.png)
 
 ### Consulta 6: Planes de tratamiento activos
 
@@ -101,7 +101,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q6_planes_activos();
 ```
 
-![Resultado Consulta 6](img/6.png)
+![Resultado Consulta 6](postgresql/6.png)
 
 ### Consulta 7: Odontólogos con citas activas
 
@@ -119,7 +119,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q7_odontologos_activos_citas();
 ```
 
-![Resultado Consulta 7](img/7.png)
+![Resultado Consulta 7](postgresql/7.png)
 
 ### Consulta 8: Sesiones clínicas registradas
 
@@ -135,7 +135,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q8_sesiones_clinicas();
 ```
 
-![Resultado Consulta 8](img/8.png)
+![Resultado Consulta 8](postgresql/8.png)
 
 ### Consulta 9: Sillones odontológicos activos
 
@@ -151,7 +151,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q9_sillones_activos();
 ```
 
-![Resultado Consulta 9](img/9.png)
+![Resultado Consulta 9](postgresql/9.png)
 
 ### Consulta 10: Búsqueda de paciente por documento de identidad
 
@@ -167,7 +167,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q10_buscar_paciente_doc('1001234567');
 ```
 
-![Resultado Consulta 10](img/10.png)
+![Resultado Consulta 10](postgresql/10.png)
 
 ### Consulta 11: Listado general de odontólogos activos
 
@@ -183,7 +183,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q11_odontologos_activos();
 ```
 
-![Resultado Consulta 11](img/11.png)
+![Resultado Consulta 11](postgresql/11.png)
 
 ### Consulta 12: Citas canceladas y sus motivos
 
@@ -201,7 +201,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q12_citas_canceladas();
 ```
 
-![Resultado Consulta 12](img/12.png)
+![Resultado Consulta 12](postgresql/12.png)
 
 ### Consulta 13: Catálogo de procedimientos activos
 
@@ -217,7 +217,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q13_procedimientos_activos();
 ```
 
-![Resultado Consulta 13](img/13.png)
+![Resultado Consulta 13](postgresql/13.png)
 
 ### Consulta 14: Total de citas acumuladas por paciente
 
@@ -235,7 +235,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q14_citas_por_paciente();
 ```
 
-![Resultado Consulta 14](img/14.png)
+![Resultado Consulta 14](postgresql/14.png)
 
 ### Consulta 15: Balance de dinero pendiente por cobro
 
@@ -251,7 +251,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q15_dinero_pendiente();
 ```
 
-![Resultado Consulta 15](img/15.png)
+![Resultado Consulta 15](postgresql/15.png)
 
 ### Consulta 16: Historias clínicas activas
 
@@ -269,7 +269,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q16_historias_activas();
 ```
 
-![Resultado Consulta 16](img/16.png)
+![Resultado Consulta 16](postgresql/16.png)
 
 ### Consulta 17: Detalles de tratamiento con costo superior a $150,000
 
@@ -287,7 +287,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q17_detalles_mayores();
 ```
 
-![Resultado Consulta 17](img/17.png)
+![Resultado Consulta 17](postgresql/17.png)
 
 ### Consulta 18: Pacientes ordenados cronológicamente por fecha de nacimiento
 
@@ -303,7 +303,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q18_pacientes_por_nacimiento();
 ```
 
-![Resultado Consulta 18](img/18.png)
+![Resultado Consulta 18](postgresql/18.png)
 
 ### Consulta 19: Sesiones clínicas completadas
 
@@ -319,7 +319,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q19_sesiones_completadas();
 ```
 
-![Resultado Consulta 19](img/19.png)
+![Resultado Consulta 19](postgresql/19.png)
 
 ### Consulta 20: Cruce de citas con paciente y odontólogo
 
@@ -337,7 +337,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q20_citas_paciente_odontologo();
 ```
 
-![Resultado Consulta 20](img/20.png)
+![Resultado Consulta 20](postgresql/20.png)
 
 ### Consulta 21: Pacientes nacidos a partir del año 2010
 
@@ -353,7 +353,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q21_pacientes_jovenes();
 ```
 
-![Resultado Consulta 21](img/21.png)
+![Resultado Consulta 21](postgresql/21.png)
 
 ### Consulta 22: Estado general de agendamiento de citas
 
@@ -369,7 +369,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q22_estado_general_citas();
 ```
 
-![Resultado Consulta 22](img/22.png)
+![Resultado Consulta 22](postgresql/22.png)
 
 ### Consulta 23: Conteo consolidado de citas agrupadas por estado
 
@@ -384,7 +384,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q23_conteo_citas_estado();
 ```
 
-![Resultado Consulta 23](img/23.png)
+![Resultado Consulta 23](postgresql/23.png)
 
 ### Consulta 24: Búsqueda de odontólogos por la inicial del nombre
 
@@ -400,7 +400,7 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q24_buscar_odontologos_letra('A');
 ```
 
-![Resultado Consulta 24](img/24.png)
+![Resultado Consulta 24](postgresql/24.png)
 
 ### Consulta 25: Pacientes registrados con estado inactivo
 
@@ -416,4 +416,4 @@ END; $$ LANGUAGE plpgsql;
 SELECT * FROM sp_pg_q25_pacientes_inactivos();
 ```
 
-![Resultado Consulta 25](img/25.png)
+![Resultado Consulta 25](postgresql/25.png)
