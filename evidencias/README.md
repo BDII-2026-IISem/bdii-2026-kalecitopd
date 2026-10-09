@@ -729,3 +729,290 @@ CALL sp_my_q17_pacientes_left_join();
 ```
 
 ![Resultado Consulta 17](mysql/17.png)
+
+### Evidencias de Ejecucion: Procedimientos Almacenados en MSSQL
+
+### Consulta 1: Consultar pacientes
+
+```sql
+CREATE PROCEDURE sp_ms_q1_pacientes
+AS
+BEGIN
+    SELECT * FROM paciente;
+END;
+GO
+
+EXEC sp_ms_q1_pacientes;
+```
+
+![Resultado Consulta 1](mssql/1.png)
+
+### Consulta 2: Consultar historias clínicas
+
+```sql
+CREATE PROCEDURE sp_ms_q2_historias_clinicas
+AS
+BEGIN
+    SELECT * FROM historia_clinica;
+END;
+GO
+
+EXEC sp_ms_q2_historias_clinicas;
+```
+
+![Resultado Consulta 2](mssql/2.png)
+
+### Consulta 3: Consultar odontólogos
+
+```sql
+CREATE PROCEDURE sp_ms_q3_odontologos
+AS
+BEGIN
+    SELECT * FROM odontologo;
+END;
+GO
+
+EXEC sp_ms_q3_odontologos;
+```
+
+![Resultado Consulta 3](mssql/3.png)
+
+### Consulta 4: Consultar sillones
+
+```sql
+CREATE PROCEDURE sp_ms_q4_sillones
+AS
+BEGIN
+    SELECT * FROM sillon;
+END;
+GO
+
+EXEC sp_ms_q4_sillones;
+```
+
+![Resultado Consulta 4](mssql/4.png)
+
+### Consulta 5: Consultar citas con información detallada (JOIN)
+
+```sql
+CREATE PROCEDURE sp_ms_q5_citas_detalladas
+AS
+BEGIN
+    SELECT 
+        c.id AS id_cita,
+        p.nombre AS paciente,
+        o.nombre AS odontologo,
+        s.nombre AS sillon,
+        c.fecha_inicio,
+        c.fecha_fin,
+        c.motivo,
+        c.estado
+    FROM cita c
+    JOIN paciente p ON c.id_paciente = p.id
+    JOIN odontologo o ON c.id_odontologo = o.id
+    JOIN sillon s ON c.id_sillon = s.id;
+END;
+GO
+
+EXEC sp_ms_q5_citas_detalladas;
+```
+
+![Resultado Consulta 5](mssql/5.png)
+
+### Consulta 6: Consultar planes de tratamiento por paciente
+
+```sql
+CREATE PROCEDURE sp_ms_q6_planes_tratamiento
+AS
+BEGIN
+    SELECT 
+        pt.id AS id_plan,
+        p.nombre AS paciente,
+        pt.nombre AS nombre_plan,
+        pt.descripcion,
+        pt.is_active
+    FROM plan_tratamiento pt
+    JOIN paciente p ON pt.id_paciente = p.id;
+END;
+GO
+
+EXEC sp_ms_q6_planes_tratamiento;
+```
+
+![Resultado Consulta 6](mssql/6.png)
+
+### Consulta 7: Consultar procedimientos disponibles
+
+```sql
+CREATE PROCEDURE sp_ms_q7_procedimientos
+AS
+BEGIN
+    SELECT * FROM procedimiento;
+END;
+GO
+
+EXEC sp_ms_q7_procedimientos;
+```
+
+![Resultado Consulta 7](mssql/7.png)
+
+### Consulta 8: Consultar detalles de tratamiento
+
+```sql
+CREATE PROCEDURE sp_ms_q8_detalles_tratamiento
+AS
+BEGIN
+    SELECT 
+        dt.id,
+        pt.nombre AS plan_tratamiento,
+        pr.nombre AS procedimiento,
+        dt.cantidad,
+        dt.valor_unitario,
+        dt.total,
+        dt.observaciones
+    FROM detalle_tratamiento dt
+    JOIN plan_tratamiento pt ON dt.cabecera_id = pt.id
+    JOIN procedimiento pr ON dt.item_id = pr.id;
+END;
+GO
+
+EXEC sp_ms_q8_detalles_tratamiento;
+```
+
+![Resultado Consulta 8](mssql/8.png)
+
+### Consulta 9: Consultar sesiones clínicas vinculadas a citas
+
+```sql
+CREATE PROCEDURE sp_ms_q9_sesiones_clinicas
+AS
+BEGIN
+    SELECT 
+        sc.id AS id_sesion,
+        sc.referencia_id AS id_cita,
+        p.nombre AS paciente,
+        sc.fecha_inicio,
+        sc.fecha_fin,
+        sc.total,
+        sc.estado,
+        sc.observaciones
+    FROM sesion_clinica sc
+    JOIN cita c ON sc.referencia_id = c.id
+    JOIN paciente p ON c.id_paciente = p.id;
+END;
+GO
+
+EXEC sp_ms_q9_sesiones_clinicas;
+```
+
+![Resultado Consulta 9](mssql/9.png)
+
+### Consulta 10: Consultar pagos realizados
+
+```sql
+CREATE PROCEDURE sp_ms_q10_pagos_realizados
+AS
+BEGIN
+    SELECT pg.id AS id_pago, pg.referencia_tipo, pt.nombre AS plan_asociado, p.nombre AS paciente, pg.metodo, pg.monto, pg.fecha, pg.estado
+    FROM pago pg
+    JOIN plan_tratamiento pt ON pg.referencia_id = pt.id
+    JOIN paciente p ON pt.id_paciente = p.id;
+END;
+GO
+
+EXEC sp_ms_q10_pagos_realizados;
+```
+
+![Resultado Consulta 10](mssql/10.png)
+
+
+### Evidencias de Ejecucion: Procedimientos Almacenados en Oracle
+
+
+### Consulta 1: Consultar pacientes
+
+```sql
+CREATE OR REPLACE PROCEDURE sp_ora_q1_pacientes AS
+    res SYS_REFCURSOR;
+BEGIN
+    OPEN res FOR SELECT * FROM PACIENTES;
+    DBMS_SQL.RETURN_RESULT(res);
+END;
+/
+
+CALL sp_ora_q1_pacientes();
+```
+
+![Resultado Consulta 1](oracle/1.png)
+
+### Consulta 2: Consultar odontólogos
+
+```sql
+CREATE OR REPLACE PROCEDURE sp_ora_q2_odontologos AS
+    res SYS_REFCURSOR;
+BEGIN
+    OPEN res FOR SELECT NOMBRE, ESPECIALIDAD, TELEFONO, EMAIL FROM ODONTOLOGOS;
+    DBMS_SQL.RETURN_RESULT(res);
+END;
+/
+
+CALL sp_ora_q2_odontologos();
+```
+
+![Resultado Consulta 2](oracle/2.png)
+
+### Consulta 3: Consultar tratamientos ordenados por precio
+
+```sql
+CREATE OR REPLACE PROCEDURE sp_ora_q3_tratamientos AS
+    res SYS_REFCURSOR;
+BEGIN
+    OPEN res FOR SELECT NOMBRE, DESCRIPCION, PRECIO FROM TRATAMIENTOS ORDER BY PRECIO DESC;
+    DBMS_SQL.RETURN_RESULT(res);
+END;
+/
+
+CALL sp_ora_q3_tratamientos();
+```
+
+![Resultado Consulta 3](oracle/3.png)
+
+### Consulta 4: Consultar citas con paciente y odontólogo (JOIN)
+
+```sql
+CREATE OR REPLACE PROCEDURE sp_ora_q4_citas_detalladas AS
+    res SYS_REFCURSOR;
+BEGIN
+    OPEN res FOR 
+        SELECT C.ID, P.NOMBRE AS PACIENTE, O.NOMBRE AS ODONTOLOGO, C.FECHA_INICIO, C.FECHA_FIN, C.MOTIVO, C.ESTADO
+        FROM CITAS C
+        INNER JOIN PACIENTES P ON C.PACIENTE_ID = P.ID
+        INNER JOIN ODONTOLOGOS O ON C.ODONTOLOGO_ID = O.ID;
+    DBMS_SQL.RETURN_RESULT(res);
+END;
+/
+
+CALL sp_ora_q4_citas_detalladas();
+```
+
+![Resultado Consulta 4](oracle/4.png)
+
+### Consulta 5: Consultar pagos con estado 'PAGADO' ordenados por monto
+
+```sql
+CREATE OR REPLACE PROCEDURE sp_ora_q5_pagos_pagados AS
+    res SYS_REFCURSOR;
+BEGIN
+    OPEN res FOR 
+        SELECT P.ID, P.REFERENCIA_TIPO, P.REFERENCIA_ID, P.METODO, P.MONTO, P.FECHA, P.ESTADO
+        FROM PAGOS P
+        WHERE P.ESTADO = 'PAGADO'
+        ORDER BY P.MONTO DESC;
+    DBMS_SQL.RETURN_RESULT(res);
+END;
+/
+
+CALL sp_ora_q5_pagos_pagados();
+```
+
+![Resultado Consulta 5](oracle/5.png)
