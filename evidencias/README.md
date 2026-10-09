@@ -1,3 +1,5 @@
+### Evidencias de Ejecucion: Procedimientos Almacenados en Postgre
+
 ### Consulta 1: Citas completas
 
 ```sql
@@ -417,3 +419,313 @@ SELECT * FROM sp_pg_q25_pacientes_inactivos();
 ```
 
 ![Resultado Consulta 25](postgresql/25.png)
+
+### Evidencias de Ejecucion: Procedimientos Almacenados en MySQL 
+
+### Consulta 1: Mostrar registros de la tabla pacientes
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q1_pacientes //
+CREATE PROCEDURE sp_my_q1_pacientes()
+BEGIN
+    SELECT nombre, tipo_documento, numero_documento, is_active FROM pacientes;
+END //
+
+CALL sp_my_q1_pacientes();
+```
+
+![Resultado Consulta 1](mysql/1.png)
+
+### Consulta 2: Consultas a múltiples tablas mediante WHERE
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q2_citas_pacientes_where //
+CREATE PROCEDURE sp_my_q2_citas_pacientes_where()
+BEGIN
+    SELECT *
+    FROM citas c, pacientes p
+    WHERE p.id = c.paciente_id;
+END //
+
+CALL sp_my_q2_citas_pacientes_where();
+```
+
+![Resultado Consulta 2](mysql/2.png)
+
+### Consulta 3: Condiciones o filtros en las consultas (WHERE implícito)
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q3_citas_pacientes_programada //
+CREATE PROCEDURE sp_my_q3_citas_pacientes_programada()
+BEGIN
+    SELECT *
+    FROM citas c, pacientes p
+    WHERE p.id = c.paciente_id AND c.estado = 'programada';
+END //
+
+CALL sp_my_q3_citas_pacientes_programada();
+```
+
+![Resultado Consulta 3](mysql/3.png)
+
+### Consulta 4: Mostrar de forma ordenada las citas (DESC)
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q4_citas_ordenadas //
+CREATE PROCEDURE sp_my_q4_citas_ordenadas()
+BEGIN
+    SELECT id, fecha_inicio, estado
+    FROM citas
+    ORDER BY fecha_inicio DESC;
+END //
+
+CALL sp_my_q4_citas_ordenadas();
+```
+
+![Resultado Consulta 4](mysql/4.png)
+
+### Consulta 5: Consultas a múltiples tablas mediante JOIN (Básico)
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q5_citas_pacientes_join //
+CREATE PROCEDURE sp_my_q5_citas_pacientes_join()
+BEGIN
+    SELECT P.nombre, P.numero_documento, C.*
+    FROM pacientes as P
+    JOIN citas as C on( P.id = C.paciente_id );
+END //
+
+CALL sp_my_q5_citas_pacientes_join();
+```
+
+![Resultado Consulta 5](mysql/5.png)
+
+### Consulta 6: Consultas a múltiples tablas mediante JOIN (Con condición de estado)
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q6_citas_completadas_join //
+CREATE PROCEDURE sp_my_q6_citas_completadas_join()
+BEGIN
+    SELECT P.nombre, P.numero_documento, C.*
+    FROM pacientes as P
+    JOIN citas as C on( P.id = C.paciente_id )
+    WHERE C.estado = 'completada';
+END //
+
+CALL sp_my_q6_citas_completadas_join();
+```
+
+![Resultado Consulta 6](mysql/6.png)
+
+### Consulta 7: Consultas con filtro condicional LIKE (Empieza con 'M')
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q7_pacientes_like_m //
+CREATE PROCEDURE sp_my_q7_pacientes_like_m()
+BEGIN
+    SELECT *
+    FROM pacientes as P
+    WHERE P.nombre LIKE 'm%';
+END //
+
+CALL sp_my_q7_pacientes_like_m();
+```
+
+![Resultado Consulta 7](mysql/7.png)
+
+### Consulta 8: Consultas con filtro condicional LIKE (Contiene un nombre específico)
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q8_pacientes_like_maria //
+CREATE PROCEDURE sp_my_q8_pacientes_like_maria()
+BEGIN
+    SELECT *
+    FROM pacientes as P
+    WHERE P.nombre LIKE CONCAT('%','maria','%');
+END //
+
+CALL sp_my_q8_pacientes_like_maria();
+```
+
+![Resultado Consulta 8](mysql/8.png)
+
+### Consulta 9: Combinación de WHERE y LIKE
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q9_citas_programadas_like_m //
+CREATE PROCEDURE sp_my_q9_citas_programadas_like_m()
+BEGIN
+    SELECT P.nombre, P.numero_documento, C.*
+    FROM pacientes as P
+    JOIN citas as C on( P.id = C.paciente_id )
+    WHERE C.estado = 'programada' AND P.nombre LIKE 'm%';
+END //
+
+CALL sp_my_q9_citas_programadas_like_m();
+```
+
+![Resultado Consulta 9](mysql/9.png)
+
+### Consulta 10: Consultas con filtros condicionales BETWEEN (Fechas de pago)
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q10_pagos_between_join //
+CREATE PROCEDURE sp_my_q10_pagos_between_join()
+BEGIN
+    SELECT P.nombre, P.numero_documento, C.fecha_inicio, C.estado, PAG.fecha, O.nombre AS odontologo
+    FROM pacientes P
+    JOIN citas C ON P.id = C.paciente_id
+    JOIN pagos PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
+    JOIN odontologos O ON O.id = C.odontologo_id
+    WHERE PAG.fecha BETWEEN '2025-01-01 00:00:00' AND '2026-12-31 23:59:59'
+    ORDER BY PAG.fecha ASC;
+END //
+
+CALL sp_my_q10_pagos_between_join();
+```
+
+![Resultado Consulta 10](mysql/10.png)
+
+### Consulta 11: Consultas con filtros condicionales BETWEEN (Fechas de cita)
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q11_pagos_between_where //
+CREATE PROCEDURE sp_my_q11_pagos_between_where()
+BEGIN
+    SELECT P.nombre, P.numero_documento, C.fecha_inicio, C.estado, PAG.fecha, O.nombre AS odontologo
+    FROM pacientes P, citas C, pagos PAG, odontologos O
+    WHERE P.id = C.paciente_id
+      AND C.id = PAG.referencia_id
+      AND PAG.referencia_tipo = 'Cita'
+      AND O.id = C.odontologo_id
+      AND C.fecha_inicio BETWEEN '2025-01-01' AND '2026-12-31'
+    ORDER BY PAG.fecha ASC;
+END //
+
+CALL sp_my_q11_pagos_between_where();
+```
+
+![Resultado Consulta 11](mysql/11.png)
+
+### Consulta 12: Consultas con agrupamiento GROUP BY (General)
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q12_pagos_agrupados //
+CREATE PROCEDURE sp_my_q12_pagos_agrupados()
+BEGIN
+    SELECT P.id, P.nombre, SUM(PAG.monto) AS TotalSuma,
+           COUNT(PAG.id) AS CuentaTotal,
+           AVG(PAG.monto) AS Promedio
+    FROM pacientes AS P
+    JOIN citas AS C ON P.id = C.paciente_id
+    JOIN pagos AS PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
+    WHERE PAG.fecha BETWEEN '2025-01-01 00:00:00' AND '2026-12-31 23:59:59'
+    GROUP BY P.id, P.nombre
+    ORDER BY TotalSuma DESC;
+END //
+
+CALL sp_my_q12_pagos_agrupados();
+```
+
+![Resultado Consulta 12](mysql/12.png)
+
+### Consulta 13: Consultas con agrupamiento GROUP BY (Filtrando por método)
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q13_pagos_tarjeta //
+CREATE PROCEDURE sp_my_q13_pagos_tarjeta()
+BEGIN
+    SELECT P.id, P.nombre, SUM(PAG.monto) AS TotalGasto,
+           COUNT(PAG.id) AS CantidadPagos
+    FROM pacientes AS P
+    JOIN citas AS C ON P.id = C.paciente_id
+    JOIN pagos AS PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
+    WHERE PAG.estado = 'pagado' AND PAG.metodo = 'tarjeta'
+    GROUP BY P.id, P.nombre
+    ORDER BY TotalGasto DESC;
+END //
+
+CALL sp_my_q13_pagos_tarjeta();
+```
+
+![Resultado Consulta 13](mysql/13.png)
+
+### Consulta 14: Consultas con agrupamiento HAVING (Suma de pagos)
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q14_pagos_having //
+CREATE PROCEDURE sp_my_q14_pagos_having()
+BEGIN
+    SELECT P.id, P.nombre, SUM(PAG.monto) AS TotalSuma,
+           AVG(PAG.monto) AS PromedioPago
+    FROM pacientes AS P
+    JOIN citas AS C ON P.id = C.paciente_id
+    JOIN pagos AS PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
+    GROUP BY P.id, P.nombre
+    HAVING SUM(PAG.monto) >= 50000
+    ORDER BY TotalSuma DESC;
+END //
+
+CALL sp_my_q14_pagos_having();
+```
+
+![Resultado Consulta 14](mysql/14.png)
+
+### Consulta 15: Consultas con agrupamiento HAVING (Combinado)
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q15_pagos_having_combinado //
+CREATE PROCEDURE sp_my_q15_pagos_having_combinado()
+BEGIN
+    SELECT P.id, P.nombre, P.numero_documento, SUM(PAG.monto) AS TotalAnual,
+           COUNT(PAG.id) AS TotalPagos
+    FROM pacientes AS P
+    JOIN citas AS C ON P.id = C.paciente_id
+    JOIN pagos AS PAG ON C.id = PAG.referencia_id AND PAG.referencia_tipo = 'Cita'
+    WHERE PAG.fecha BETWEEN '2025-01-01 00:00:00' AND '2026-12-31 23:59:59'
+    GROUP BY P.id, P.nombre, P.numero_documento
+    HAVING COUNT(PAG.id) >= 1 AND SUM(PAG.monto) >= 50000
+    ORDER BY TotalAnual DESC;
+END //
+
+CALL sp_my_q15_pagos_having_combinado();
+```
+
+![Resultado Consulta 15](mysql/15.png)
+
+### Consulta 16: Subconsultas y teoría de conjuntos (Con NOT IN)
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q16_pacientes_not_in //
+CREATE PROCEDURE sp_my_q16_pacientes_not_in()
+BEGIN
+    SELECT *
+    FROM pacientes as P
+    WHERE P.id NOT IN (
+        SELECT C.paciente_id
+        FROM citas as C
+        WHERE C.fecha_inicio BETWEEN '2025-01-01' AND '2026-12-31'
+    );
+END //
+
+CALL sp_my_q16_pacientes_not_in();
+```
+
+![Resultado Consulta 16](mysql/16.png)
+
+### Consulta 17: Subconsultas y teoría de conjuntos (Con LEFT JOIN)
+
+```sql
+DROP PROCEDURE IF EXISTS sp_my_q17_pacientes_left_join //
+CREATE PROCEDURE sp_my_q17_pacientes_left_join()
+BEGIN
+    SELECT *
+    FROM pacientes as P
+    LEFT JOIN citas as C ON(P.id = C.paciente_id AND C.fecha_inicio BETWEEN '2025-01-01' AND '2026-12-31')
+    WHERE C.paciente_id IS NULL;
+END //
+
+CALL sp_my_q17_pacientes_left_join();
+```
+
+![Resultado Consulta 17](mysql/17.png)
