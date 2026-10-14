@@ -1016,3 +1016,65 @@ CALL sp_ora_q5_pagos_pagados();
 ```
 
 ![Resultado Consulta 5](oracle/5.png)
+
+# 🦷 Proyecto OdontoNova - Sistema de Gestión Odontológica
+
+Repositorio oficial para el desarrollo del segundo examen del núcleo de bases de datos. El proyecto **OdontoNova** implementa el esquema relacional y reglas de negocio automatizadas mediante **Triggers (Disparadores)** en cuatro motores corporativos: **Oracle, PostgreSQL, MySQL y MS SQL Server**.
+
+---
+
+## 📋 Tabla de Contenidos
+1. [Descripción del Proyecto](#-descripción-del-proyecto)
+2. [Entorno y Arquitectura (Docker)](#-entorno-y-arquitectura-docker)
+3. [Implementación de Triggers y Evidencias](#-implementación-de-triggers-y-evidencias)
+   - [Oracle](#31-oracle-database)
+   - [PostgreSQL](#32-postgresql)
+   - [MySQL](#33-mysql)
+   - [MS SQL Server](#34-ms-sql-server)
+
+---
+
+## 🏥 1. Descripción del Proyecto
+**OdontoNova** automatiza el control operativo de una clínica odontológica. Para garantizar la integridad de los datos, se desarrollaron disparadores a nivel de base de datos que validan automáticamente:
+* Estados iniciales por defecto en las citas.
+* Fechas de inicio obligatorias y rangos de edad/nacimiento.
+* Control de montos positivos y métodos de pago predeterminados.
+
+---
+
+## ⚙️ 2. Entorno y Arquitectura (Docker)
+Los motores de bases de datos corren bajo contenedores en Ubuntu y se administran de manera centralizada desde **DBeaver**:
+* **Oracle Database** (Puerto 1521)
+* **PostgreSQL** (Puerto 5432)
+* **MySQL** (Puerto 3306)
+* **MS SQL Server** (Puerto 1433)
+
+---
+
+## 🛠️ 3. Implementación de Triggers y Evidencias
+
+### 3.1. Oracle Database
+Se implementaron triggers de fila (`BEFORE INSERT`) para asegurar valores por defecto y validaciones de integridad de campos obligatorios en las tablas del sistema.
+
+![Trigger Oracle](oracle/TRIGGER_ORACLE.png)
+
+---
+
+### 3.2. PostgreSQL
+Se estructuró el funcionamiento mediante funciones procedurales escritas en `plpgsql` asociadas a los disparadores de fila para validar fechas y estados iniciales.
+
+![Trigger PostgreSQL](postgresql/TRIGGER_POSTGRE.png)
+
+---
+
+### 3.3. MySQL
+Utilizando bloques delimitados (`DELIMITER //`), se configuraron restricciones a nivel de inserción utilizando `SIGNAL SQLSTATE` para la gestión de excepciones financieras y operativas.
+
+![Trigger MySQL](mysql/TRIGGER_MYSQL.png)
+
+---
+
+### 3.4. MS SQL Server
+Implementado mediante tablas virtuales temporales (`inserted`) para procesar las transacciones de validación de montos y actualización de registros predeterminados.
+
+![Trigger MSSQL](mssql/TRIGGER_MSSQL.png)
