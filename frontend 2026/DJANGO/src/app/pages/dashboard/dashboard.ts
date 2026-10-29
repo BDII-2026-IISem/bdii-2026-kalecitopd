@@ -1,11 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { AuthService } from '../../core/auth.service';
 import { Appointment, Patient } from '../../core/models';
 import { DentalApiService } from '../../core/dental-api.service';
 
 @Component({
+  imports: [RouterLink],
   selector: 'app-dashboard',
   templateUrl: './dashboard.html',
 })
