@@ -1,33 +1,54 @@
-from django.shortcuts import render
+from django.contrib.auth import get_user_model
 from rest_framework import viewsets, status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.views import TokenRefreshView
 
+from .permissions import HasResourcePermission
 from .models import Role, RoleUser, Resource, ResourceRole
 from .serializers import (
     RoleSerializer, RoleUserSerializer, 
-    ResourceSerializer, ResourceRoleSerializer
+    ResourceSerializer, ResourceRoleSerializer, UserSerializer,
+    ProfileUpdateSerializer,
 )
+
+User = get_user_model()
 
 # --- ViewSets de Seguridad ---
 class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
+    permission_classes = (permissions.IsAuthenticated, HasResourcePermission)
+    resource_name = "roles"
 
 class RoleUserViewSet(viewsets.ModelViewSet):
     queryset = RoleUser.objects.all()
     serializer_class = RoleUserSerializer
+    permission_classes = (permissions.IsAuthenticated, HasResourcePermission)
+    resource_name = "role-users"
 
 class ResourceViewSet(viewsets.ModelViewSet):
     queryset = Resource.objects.all()
     serializer_class = ResourceSerializer
+    permission_classes = (permissions.IsAuthenticated, HasResourcePermission)
+    resource_name = "resources"
 
 class ResourceRoleViewSet(viewsets.ModelViewSet):
     queryset = ResourceRole.objects.all()
     serializer_class = ResourceRoleSerializer
+    permission_classes = (permissions.IsAuthenticated, HasResourcePermission)
+    resource_name = "resource-roles"
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all().order_by("username")
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated, HasResourcePermission)
+    resource_name = "users"
 
 
 # --- Login Personalizado ---
@@ -47,6 +68,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             'email': self.user.email,
             'first_name': self.user.first_name,
             'last_name': self.user.last_name,
+            'is_superuser': self.user.is_superuser,
         }
         return data
 
@@ -67,9 +89,12 @@ class LogoutView(APIView):
             token = RefreshToken(refresh_token)
             token.blacklist()
 
-            return Response({"detail": "Cierre de sesión exitoso."}, status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except TokenError:
+            return Response(
+                {"detail": "El refresh token no es válido o ya fue revocado."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         
 class ProfileView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -82,8 +107,16 @@ class ProfileView(APIView):
             'email': user.email,
             'first_name': user.first_name,
             'last_name': user.last_name,
+            'is_superuser': user.is_superuser,
         }
         return Response(data, status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        serializer = ProfileUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        request.user.email = serializer.validated_data["email"]
+        request.user.save(update_fields=("email",))
+        return self.get(request)
     
 def has_resource_access(user, resource_name):
     if user.is_superuser:
@@ -104,3 +137,38 @@ class CheckResourceAccessView(APIView):
             "resource": resource_name,
             "has_access": allowed
         }, status=status.HTTP_200_OK)
+
+
+class PermissionsView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        if request.user.is_superuser:
+            return Response({
+                "permissions": [{
+                    "resource": "*",
+                    "method": "*",
+                    "path": "/api/",
+                    "roleId": None,
+                    "roleName": "Superusuario",
+                }]
+            })
+
+        role_ids = RoleUser.objects.filter(user=request.user).values_list(
+            "role_id", flat=True
+        )
+        grants = ResourceRole.objects.filter(
+            role_id__in=role_ids
+        ).select_related("role", "resource").order_by("resource__name", "role__name")
+        return Response({
+            "permissions": [
+                {
+                    "resource": grant.resource.name,
+                    "method": "*",
+                    "path": f"/api/{grant.resource.name}/",
+                    "roleId": grant.role_id,
+                    "roleName": grant.role.name,
+                }
+                for grant in grants
+            ]
+        })

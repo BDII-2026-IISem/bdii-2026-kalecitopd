@@ -12,8 +12,7 @@ urlpatterns = [
     
     # Rutas de las aplicaciones de negocio y seguridad
     path('api/', include('client.urls')),
-    path('api/', include('product.urls')),
-    path('api/', include('sale.urls')),
+    path('api/', include('dental.urls')),
     path('api/', include('security.urls')),
     
     # Autenticación web de DRF y JWT SimpleJWT

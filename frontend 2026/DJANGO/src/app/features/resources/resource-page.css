@@ -1,0 +1,392 @@
+.resource-panel {
+  min-width: 0;
+}
+
+.page-heading h1 {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.page-heading h1 i {
+  color: #299181;
+  font-size: 23px;
+}
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 12px 14px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.notice > i {
+  margin-top: 1px;
+}
+
+.notice > span {
+  flex: 1;
+}
+
+.success-notice {
+  border-color: #ccece3;
+  color: #247364;
+  background: #f0faf7;
+}
+
+.error-notice {
+  border-color: #f4d2ce;
+  color: #a63831;
+  background: #fff5f4;
+}
+
+.warning-notice {
+  border-color: #f1e2bc;
+  color: #866522;
+  background: #fffaf0;
+}
+
+.notice-close,
+.dialog-close {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.notice-close:hover,
+.dialog-close:hover {
+  background: rgb(0 0 0 / 5%);
+}
+
+.actions-heading {
+  width: 150px;
+  text-align: right;
+}
+
+.row-actions {
+  width: 150px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.table-action {
+  display: inline-flex;
+  min-width: 31px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-left: 4px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 7px;
+  color: #64808a;
+  background: transparent;
+  cursor: pointer;
+}
+
+.table-action:hover {
+  color: #1b7b70;
+  background: #eaf6f3;
+}
+
+.table-action:disabled {
+  opacity: .5;
+  cursor: wait;
+}
+
+.table-action.danger-action:hover {
+  color: #a63831;
+  background: #fff0ef;
+}
+
+.evolution-action {
+  color: #287d6e;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.primary-cell {
+  color: #2a4650;
+  font-weight: 700;
+}
+
+.status-pill.active,
+.status-pill.confirmed,
+.status-pill.completed {
+  color: #287d6e;
+  background: #e3f5ef;
+}
+
+.status-pill.inactive,
+.status-pill.cancelled,
+.status-pill.no_show {
+  color: #a64b48;
+  background: #fcebea;
+}
+
+.status-pill.scheduled,
+.status-pill.pending,
+.status-pill.draft,
+.status-pill.in_progress {
+  color: #a56d24;
+  background: #fff4dc;
+}
+
+.status-pill.active {
+  color: #287d6e;
+  background: #e3f5ef;
+}
+
+.modal-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  overflow: auto;
+  place-items: center;
+  padding: 22px;
+  background: rgb(13 34 40 / 54%);
+}
+
+.form-dialog {
+  width: min(660px, 100%);
+  max-height: min(90vh, 880px);
+  overflow: auto;
+  border: 1px solid #e8eef1;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 24px 80px rgb(13 34 40 / 24%);
+}
+
+.dialog-heading {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 21px 24px 17px;
+  border-bottom: 1px solid #edf1f3;
+  background: #fff;
+}
+
+.dialog-heading h2 {
+  margin: 6px 0 0;
+  color: #1d3943;
+  font-size: 20px;
+}
+
+.resource-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 21px 24px 24px;
+}
+
+.form-field {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  color: #36505a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.form-field > span b {
+  color: #bd4d42;
+}
+
+.form-field input:not([type="checkbox"]),
+.form-field select,
+.form-field textarea,
+.session-line input,
+.session-line select,
+.materials-field input {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 9px 11px;
+  border: 1px solid #dfe7ea;
+  border-radius: 7px;
+  outline: 0;
+  color: #28434d;
+  background: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.form-field textarea {
+  resize: vertical;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus,
+.session-line input:focus,
+.session-line select:focus,
+.materials-field input:focus {
+  border-color: #54b5a3;
+  box-shadow: 0 0 0 3px rgb(84 181 163 / 14%);
+}
+
+.form-field input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #1a7f75;
+}
+
+.form-field.checkbox-field {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 9px;
+  align-self: end;
+}
+
+.field-help {
+  color: #8a9aa0;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.session-lines {
+  min-width: 0;
+  grid-column: 1 / -1;
+  padding: 14px;
+  border: 1px solid #e7eef0;
+  border-radius: 9px;
+}
+
+.session-lines legend {
+  padding: 0 6px;
+  color: #36505a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.session-lines > .field-help {
+  margin: 0 0 11px;
+}
+
+.session-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 92px 32px;
+  align-items: end;
+  gap: 9px;
+  margin-top: 13px;
+}
+
+.session-line label,
+.materials-field {
+  display: grid;
+  gap: 6px;
+  color: #526b74;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.materials-field {
+  margin-top: 8px;
+}
+
+.session-line .table-action {
+  margin: 0 0 5px;
+}
+
+.secondary-button {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 13px;
+  border: 1px solid #dce7e9;
+  border-radius: 7px;
+  color: #42616a;
+  background: #fff;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.secondary-button:hover {
+  border-color: #a9cec8;
+  color: #1b7b70;
+  background: #f5fbf9;
+}
+
+.secondary-button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.dialog-actions {
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #edf1f3;
+}
+
+.dialog-actions .primary-link {
+  min-height: 38px;
+  border: 0;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.dialog-actions .primary-link:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.evolution-dialog {
+  width: min(560px, 100%);
+}
+
+@media (max-width: 620px) {
+  .resource-form {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .form-field,
+  .session-lines,
+  .dialog-actions {
+    grid-column: 1;
+  }
+
+  .dialog-heading {
+    padding: 17px 18px;
+  }
+
+  .page-heading {
+    align-items: flex-start;
+  }
+
+  .page-heading .primary-link {
+    padding: 10px;
+    font-size: 0;
+  }
+
+  .page-heading .primary-link i {
+    font-size: 13px;
+  }
+}

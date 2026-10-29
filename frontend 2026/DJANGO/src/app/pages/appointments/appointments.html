@@ -1,0 +1,43 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">AGENDA CLÍNICA</span>
+    <h1>Citas</h1>
+    <p>Agenda y consulta las citas de la clínica.</p>
+  </div>
+</div>
+
+@if (errorMessage()) {
+  <div class="error-banner" role="alert">
+    <i class="pi pi-exclamation-triangle"></i><span>{{ errorMessage() }}</span>
+    <button type="button" class="text-button" (click)="reload()">Reintentar</button>
+  </div>
+}
+
+<section class="panel">
+  <div class="list-toolbar">
+    <div><h2>Agenda de citas</h2><p>{{ appointments().length }} registros</p></div>
+    <span class="read-only-note"><i class="pi pi-info-circle"></i> Consulta de agenda</span>
+  </div>
+
+  @if (loading()) {
+    <div class="empty-state"><i class="pi pi-spin pi-spinner"></i><span>Cargando citas...</span></div>
+  } @else if (sortedAppointments().length === 0) {
+    <div class="empty-state"><span class="empty-icon"><i class="pi pi-calendar-plus"></i></span><strong>No hay citas registradas</strong><span>Las citas aparecerán aquí al agregarlas desde el sistema.</span></div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>FECHA Y HORA</th><th>PACIENTE</th><th>MOTIVO</th><th>ESTADO</th></tr></thead>
+        <tbody>
+          @for (appointment of sortedAppointments(); track appointment.id) {
+            <tr>
+              <td class="time-cell">{{ formatDate(appointment.start_time) }}</td>
+              <td><span class="patient-cell">{{ patientName(appointment.patient) }}</span></td>
+              <td>{{ appointment.motive }}</td>
+              <td><span class="status-pill" [class]="appointment.status">{{ statusLabel(appointment.status) }}</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

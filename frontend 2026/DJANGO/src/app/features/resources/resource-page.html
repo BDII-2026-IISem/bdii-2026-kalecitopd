@@ -1,0 +1,222 @@
+@if (resource(); as config) {
+  <div class="page-heading">
+    <div>
+      <span class="eyebrow">GESTIÓN ODONTONOVA</span>
+      <h1><i [class]="config.icon"></i> {{ config.title }}</h1>
+      <p>{{ config.description }}</p>
+    </div>
+    @if (canCreate()) {
+      <button type="button" class="primary-link" (click)="openCreate()">
+        <i class="pi pi-plus"></i> Nuevo {{ config.singular }}
+      </button>
+    }
+  </div>
+
+  @if (successMessage()) {
+    <div class="notice success-notice" role="status">
+      <i class="pi pi-check-circle"></i><span>{{ successMessage() }}</span>
+      <button type="button" class="notice-close" aria-label="Cerrar aviso" (click)="clearSuccess()"><i class="pi pi-times"></i></button>
+    </div>
+  }
+  @if (errorMessage()) {
+    <div class="notice error-notice" role="alert">
+      <i class="pi pi-exclamation-triangle"></i><span>{{ errorMessage() }}</span>
+      <button type="button" class="text-button" (click)="reload()">Reintentar</button>
+    </div>
+  }
+  @if (referenceErrors().length > 0) {
+    <div class="notice warning-notice" role="status">
+      <i class="pi pi-info-circle"></i>
+      <span>No se pudieron cargar algunos catálogos relacionados: {{ referenceErrorSummary() }}</span>
+    </div>
+  }
+
+  <section class="panel resource-panel">
+    <div class="list-toolbar">
+      <div>
+        <h2>Listado de {{ config.title.toLocaleLowerCase() }}</h2>
+        <p>{{ filteredRecords().length }} de {{ records().length }} registros</p>
+      </div>
+      <label class="search-field">
+        <i class="pi pi-search"></i>
+        <input type="search" [ngModel]="query()" (ngModelChange)="query.set($event)" [placeholder]="'Buscar ' + config.singular + '...'" aria-label="Buscar" />
+      </label>
+    </div>
+
+    @if (loading()) {
+      <div class="empty-state"><i class="pi pi-spin pi-spinner"></i><span>Cargando {{ config.title.toLocaleLowerCase() }}...</span></div>
+    } @else if (records().length === 0) {
+      <div class="empty-state">
+        <span class="empty-icon"><i [class]="config.icon"></i></span>
+        <strong>Aún no hay registros</strong>
+        <span>Cuando se registren {{ config.title.toLocaleLowerCase() }}, aparecerán aquí.</span>
+      </div>
+    } @else if (filteredRecords().length === 0) {
+      <div class="empty-state"><span class="empty-icon"><i class="pi pi-search"></i></span><strong>No encontramos resultados</strong><span>Prueba con otro término de búsqueda.</span></div>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              @for (column of config.columns; track column.key) {
+                <th>{{ column.label.toLocaleUpperCase() }}</th>
+              }
+              @if (canEdit() || canDelete() || (config.nestedEvolution && canAddEvolution())) {
+                <th class="actions-heading">ACCIONES</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (record of filteredRecords(); track record['id']) {
+              <tr>
+                @for (column of config.columns; track column.key) {
+                  <td>
+                    @if (column.key === 'status' || column.key === 'is_active') {
+                      <span class="status-pill" [class]="statusClass(record, column.key)">
+                        {{ displayValue(record, column) }}
+                      </span>
+                    } @else {
+                      <span [class.primary-cell]="column === config.columns[0]">{{ displayValue(record, column) }}</span>
+                    }
+                  </td>
+                }
+                @if (canEdit() || canDelete() || (config.nestedEvolution && canAddEvolution())) {
+                  <td class="row-actions">
+                    @if (config.nestedEvolution && canAddEvolution()) {
+                      <button type="button" class="table-action evolution-action" (click)="openEvolution(record)">
+                        <i class="pi pi-file-edit"></i><span>Evolución</span>
+                      </button>
+                    }
+                    @if (canEdit()) {
+                      <button type="button" class="table-action" [attr.aria-label]="'Editar ' + config.singular" (click)="openEdit(record)">
+                        <i class="pi pi-pencil"></i>
+                      </button>
+                    }
+                    @if (canDelete()) {
+                      <button type="button" class="table-action danger-action" [disabled]="deletingId() === recordId(record)" [attr.aria-label]="'Eliminar ' + config.singular" (click)="deleteRecord(record)">
+                        <i class="pi pi-trash"></i>
+                      </button>
+                    }
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  @if (dialogOpen()) {
+    <div class="modal-backdrop" (click)="closeDialog()">
+      <section class="form-dialog" role="dialog" aria-modal="true" [attr.aria-label]="formTitle()" (click)="$event.stopPropagation()">
+        <header class="dialog-heading">
+          <div><span class="eyebrow">ODONTONOVA</span><h2>{{ formTitle() }}</h2></div>
+          <button type="button" class="dialog-close" aria-label="Cerrar" (click)="closeDialog()"><i class="pi pi-times"></i></button>
+        </header>
+
+        @if (formError()) {
+          <div class="notice error-notice" role="alert"><i class="pi pi-exclamation-circle"></i><span>{{ formError() }}</span></div>
+        }
+        @if (formUnavailable()) {
+          <div class="notice warning-notice" role="alert"><i class="pi pi-lock"></i><span>No se puede guardar hasta que tengas acceso a los catálogos requeridos.</span></div>
+        }
+
+        <form class="resource-form" (ngSubmit)="save()">
+          @for (field of config.fields; track field.key) {
+            @if (field.type === 'session-lines') {
+              <fieldset class="session-lines">
+                <legend>{{ field.label }}</legend>
+                <p class="field-help">{{ field.help }}</p>
+                @if (editingId() !== null) {
+                  <p class="field-help">Las ejecuciones de una sesión existente no se pueden reemplazar.</p>
+                } @else {
+                  @for (line of sessionLines(); track $index; let i = $index) {
+                    <div class="session-line">
+                      <label>
+                        <span>Detalle aprobado</span>
+                        <select [ngModel]="line.treatment_detail" [ngModelOptions]="{standalone: true}" (ngModelChange)="updateSessionLine(i, {treatment_detail: parseNumber($event)})">
+                          <option [ngValue]="null">Selecciona un procedimiento</option>
+                          @for (option of availableTreatmentDetails(); track option.value) {
+                            <option [ngValue]="option.value">{{ option.label }}</option>
+                          }
+                        </select>
+                      </label>
+                      <label class="quantity-field">
+                        <span>Cantidad</span>
+                        <input type="number" min="1" step="1" [ngModel]="line.quantity" [ngModelOptions]="{standalone: true}" (ngModelChange)="updateSessionLine(i, {quantity: parseNumber($event) ?? 1})" />
+                      </label>
+                      <button type="button" class="table-action danger-action" aria-label="Quitar procedimiento" (click)="removeSessionLine(i)"><i class="pi pi-times"></i></button>
+                    </div>
+                    <label class="materials-field">
+                      <span>Materiales utilizados</span>
+                      <input type="text" [ngModel]="line.materials_used" [ngModelOptions]="{standalone: true}" (ngModelChange)="updateSessionLine(i, {materials_used: $event})" />
+                    </label>
+                  }
+                  <button type="button" class="secondary-button" [disabled]="hasReferenceError('detalles-tratamiento') || availableTreatmentDetails().length === 0" (click)="addSessionLine()">
+                    <i class="pi pi-plus"></i> Añadir procedimiento aprobado
+                  </button>
+                }
+              </fieldset>
+            } @else {
+              <label class="form-field" [class.checkbox-field]="field.type === 'checkbox'">
+                @if (field.type === 'checkbox') {
+                  <input type="checkbox" [ngModel]="fieldValue(field)" [ngModelOptions]="{standalone: true}" (ngModelChange)="setField(field.key, $event)" />
+                  <span>{{ field.label }}</span>
+                } @else {
+                  <span>{{ field.label }} @if (field.required && editingId() === null) {<b>*</b>}</span>
+                  @switch (field.type) {
+                    @case ('textarea') {
+                      <textarea rows="3" [ngModel]="fieldValue(field)" [ngModelOptions]="{standalone: true}" (ngModelChange)="setField(field.key, $event)" [required]="!!field.required && editingId() === null"></textarea>
+                    }
+                    @case ('select') {
+                      <select [ngModel]="fieldValue(field)" [ngModelOptions]="{standalone: true}" (ngModelChange)="setField(field.key, $event)" [required]="!!field.required && editingId() === null">
+                        <option [ngValue]="''">Selecciona una opción</option>
+                        @for (option of field.options ?? referenceList(field.source ?? ''); track option.value) {
+                          <option [ngValue]="option.value">{{ option.label }}</option>
+                        }
+                      </select>
+                    }
+                    @default {
+                      <input [type]="field.type" [ngModel]="fieldValue(field)" [ngModelOptions]="{standalone: true}" (ngModelChange)="setField(field.key, $event)" [required]="!!field.required && editingId() === null" [min]="field.min ?? null" [step]="field.step ?? null" [autocomplete]="field.type === 'password' ? 'new-password' : null" />
+                    }
+                  }
+                }
+                @if (field.help) {<small class="field-help">{{ field.help }}</small>}
+              </label>
+            }
+          }
+          <footer class="dialog-actions">
+            <button type="button" class="secondary-button" [disabled]="saving()" (click)="closeDialog()">Cancelar</button>
+            <button type="submit" class="primary-link" [disabled]="saving() || formUnavailable()">
+              @if (saving()) {<i class="pi pi-spin pi-spinner"></i>} @else {<i class="pi pi-check"></i>}
+              Guardar
+            </button>
+          </footer>
+        </form>
+      </section>
+    </div>
+  }
+
+  @if (evolutionHistoryId() !== null) {
+    <div class="modal-backdrop" (click)="closeEvolution()">
+      <section class="form-dialog evolution-dialog" role="dialog" aria-modal="true" aria-label="Registrar evolución clínica" (click)="$event.stopPropagation()">
+        <header class="dialog-heading">
+          <div><span class="eyebrow">HISTORIA CLÍNICA #{{ evolutionHistoryId() }}</span><h2>Registrar evolución</h2></div>
+          <button type="button" class="dialog-close" aria-label="Cerrar" (click)="closeEvolution()"><i class="pi pi-times"></i></button>
+        </header>
+        @if (evolutionError()) {<div class="notice error-notice" role="alert"><i class="pi pi-exclamation-circle"></i><span>{{ evolutionError() }}</span></div>}
+        <form class="resource-form" (ngSubmit)="saveEvolution()">
+          <label class="form-field"><span>Hallazgos *</span><textarea rows="3" required [ngModel]="evolutionValues()['findings']" [ngModelOptions]="{standalone: true}" (ngModelChange)="setEvolutionField('findings', $event)"></textarea></label>
+          <label class="form-field"><span>Procedimientos realizados</span><textarea rows="2" [ngModel]="evolutionValues()['procedures']" [ngModelOptions]="{standalone: true}" (ngModelChange)="setEvolutionField('procedures', $event)"></textarea></label>
+          <label class="form-field"><span>Materiales utilizados</span><textarea rows="2" [ngModel]="evolutionValues()['materials_used']" [ngModelOptions]="{standalone: true}" (ngModelChange)="setEvolutionField('materials_used', $event)"></textarea></label>
+          <label class="form-field"><span>Consentimiento firmado</span><input type="datetime-local" [ngModel]="evolutionValues()['consent_signed_at']" [ngModelOptions]="{standalone: true}" (ngModelChange)="setEvolutionField('consent_signed_at', $event)" /></label>
+          <footer class="dialog-actions">
+            <button type="button" class="secondary-button" (click)="closeEvolution()">Cancelar</button>
+            <button type="submit" class="primary-link"><i class="pi pi-check"></i> Guardar evolución</button>
+          </footer>
+        </form>
+      </section>
+    </div>
+  }
+}

@@ -1,0 +1,309 @@
+﻿:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f8fb;
+}
+
+.sidebar {
+  width: 252px;
+  display: flex;
+  flex: 0 0 252px;
+  flex-direction: column;
+  padding: 28px 17px 18px;
+  color: #d3e2e8;
+  background: #123b45;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 8px 48px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 13px;
+  color: #123b45;
+  background: #9ce0d4;
+  font-size: 19px;
+}
+
+.brand strong,
+.brand small,
+.user-copy strong,
+.user-copy small {
+  display: block;
+}
+
+.brand strong {
+  font-size: 17px;
+  letter-spacing: -.3px;
+}
+
+.brand small {
+  margin-top: 3px;
+  color: #9bb9be;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.nav-caption {
+  padding: 0 12px;
+  color: #8eafb4;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+}
+
+.main-nav {
+  display: grid;
+  align-content: start;
+  gap: 17px;
+  overflow: auto;
+  margin-top: 14px;
+}
+
+.nav-section {
+  display: grid;
+  gap: 5px;
+}
+
+.nav-caption {
+  padding: 0 12px 3px;
+  color: #8eafb4;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+}
+
+.main-nav a {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 12px;
+  border-radius: 9px;
+  color: #c1d5d9;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .15s ease, color .15s ease;
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+  color: #fff;
+  background: #20535d;
+}
+
+.main-nav a.active {
+  box-shadow: inset 3px 0 #83d6c6;
+}
+
+.main-nav i {
+  width: 18px;
+  text-align: center;
+  font-size: 15px;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 8px 0;
+  border-top: 1px solid #2d5961;
+}
+
+.avatar,
+.topbar-avatar {
+  display: grid;
+  flex: 0 0 auto;
+  width: 35px;
+  height: 35px;
+  place-items: center;
+  border-radius: 50%;
+  color: #164650;
+  background: #b7e5dc;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.profile-link {
+  text-decoration: none;
+}
+
+.user-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.user-copy strong {
+  overflow: hidden;
+  color: #fff;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-copy small {
+  margin-top: 4px;
+  color: #9bb9be;
+  font-size: 10px;
+}
+
+.icon-button {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  color: #fff;
+  background: #2b6069;
+}
+
+.inline-error {
+  margin: 10px 6px 0;
+  color: #ffd3cf;
+  font-size: 11px;
+}
+
+.main-area {
+  min-width: 0;
+  flex: 1;
+}
+
+.topbar {
+  display: flex;
+  height: 76px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 38px;
+  border-bottom: 1px solid #e8eef1;
+  background: #fff;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #82939b;
+  font-size: 12px;
+}
+
+.breadcrumb i {
+  color: #bac6ca;
+  font-size: 10px;
+}
+
+.breadcrumb strong {
+  color: #203d47;
+  font-weight: 700;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+}
+
+.permission-refresh {
+  color: #6d858d;
+}
+
+.permission-refresh:hover {
+  color: #187b70;
+  background: #eaf6f3;
+}
+
+.permission-banner {
+  padding: 9px 38px;
+  border-bottom: 1px solid #ccece3;
+  color: #247364;
+  background: #f0faf7;
+  font-size: 11px;
+}
+
+.today-label {
+  color: #71848c;
+  font-size: 12px;
+}
+
+.page-content {
+  width: min(1320px, 100%);
+  margin: 0 auto;
+  padding: 34px 38px 56px;
+}
+
+@media (max-width: 760px) {
+  .sidebar {
+    width: 68px;
+    flex-basis: 68px;
+    align-items: center;
+    padding: 18px 8px;
+  }
+
+  .brand {
+    margin: 0 0 38px;
+  }
+
+  .brand > span:last-child,
+  .nav-caption,
+  .main-nav a span,
+  .user-copy,
+  .logout-button {
+    display: none;
+  }
+
+  .main-nav {
+    width: 100%;
+  }
+
+  .main-nav a {
+    justify-content: center;
+    padding: 13px 4px;
+  }
+
+  .main-nav a.active {
+    box-shadow: inset 0 -3px #83d6c6;
+  }
+
+  .user-card {
+    padding: 12px 0 0;
+    border: 0;
+  }
+
+  .topbar {
+    height: 64px;
+    padding: 0 18px;
+  }
+
+  .today-label {
+    display: none;
+  }
+
+  .page-content {
+    padding: 25px 18px 40px;
+  }
+}

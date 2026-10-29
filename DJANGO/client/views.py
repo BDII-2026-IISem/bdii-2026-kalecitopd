@@ -1,14 +1,14 @@
-from django.shortcuts import render
+
 
 # Create your views here.
 from rest_framework import viewsets, permissions
 from security.permissions import HasResourcePermission
-from .models import Client
-from .serializers import ClientSerializer
+from .models import Patient
+from .serializers import PatientSerializer
 
-class ClientViewSet(viewsets.ModelViewSet):
-    queryset = Client.objects.all()
-    serializer_class = ClientSerializer
+
+class PatientViewSet(viewsets.ModelViewSet):
+    queryset = Patient.objects.all()
+    serializer_class = PatientSerializer
     permission_classes = [permissions.IsAuthenticated, HasResourcePermission]
-    resource_name = 'clients'  # Nombre del recurso con el que validarás permisos
-
+    resource_name = 'pacientes'

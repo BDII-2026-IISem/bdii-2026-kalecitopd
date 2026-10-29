@@ -1,0 +1,62 @@
+<div class="page-heading">
+  <div>
+    <span class="eyebrow">PANEL DE CONTROL</span>
+    <h1>Resumen de la clínica</h1>
+    <p>Esto es lo que está pasando hoy en OdontoNova.</p>
+  </div>
+  <a class="primary-link" routerLink="/appointments"><i class="pi pi-plus"></i> Ver agenda</a>
+</div>
+
+@if (errorMessage()) {
+  <div class="error-banner" role="alert">
+    <i class="pi pi-exclamation-triangle"></i><span>{{ errorMessage() }}</span>
+    <button type="button" class="text-button" (click)="reload()">Reintentar</button>
+  </div>
+}
+
+<div class="stat-grid">
+  <article class="stat-card">
+    <span class="stat-icon mint"><i class="pi pi-users"></i></span>
+    <span class="stat-copy"><small>Pacientes registrados</small><strong>{{ loading() ? '—' : patients().length }}</strong></span>
+    <a routerLink="/patients" class="stat-link">Ver pacientes <i class="pi pi-arrow-up-right"></i></a>
+  </article>
+  <article class="stat-card">
+    <span class="stat-icon blue"><i class="pi pi-calendar"></i></span>
+    <span class="stat-copy"><small>Citas para hoy</small><strong>{{ loading() ? '—' : todayAppointments().length }}</strong></span>
+    <span class="stat-note">Agenda del día</span>
+  </article>
+  <article class="stat-card">
+    <span class="stat-icon peach"><i class="pi pi-clock"></i></span>
+    <span class="stat-copy"><small>Citas por atender</small><strong>{{ loading() ? '—' : activeAppointments() }}</strong></span>
+    <span class="stat-note">Programadas o confirmadas</span>
+  </article>
+</div>
+
+<section class="panel">
+  <div class="panel-heading">
+    <div><h2>Agenda de hoy</h2><p>Próximas citas programadas</p></div>
+    <a routerLink="/appointments" class="subtle-link">Ver todas <i class="pi pi-arrow-right"></i></a>
+  </div>
+
+  @if (loading()) {
+    <div class="empty-state"><i class="pi pi-spin pi-spinner"></i><span>Cargando agenda...</span></div>
+  } @else if (todayAppointments().length === 0) {
+    <div class="empty-state"><span class="empty-icon"><i class="pi pi-calendar-plus"></i></span><strong>No hay citas para hoy</strong><span>Cuando se registren citas, aparecerán aquí.</span></div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>HORA</th><th>PACIENTE</th><th>MOTIVO</th><th>ESTADO</th></tr></thead>
+        <tbody>
+          @for (appointment of todayAppointments(); track appointment.id) {
+            <tr>
+              <td class="time-cell">{{ formatTime(appointment.start_time) }}</td>
+              <td><span class="patient-cell">{{ patientName(appointment.patient) }}</span></td>
+              <td>{{ appointment.motive }}</td>
+              <td><span class="status-pill" [class]="appointment.status">{{ statusLabel(appointment.status) }}</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
