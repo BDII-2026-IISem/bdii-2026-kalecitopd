@@ -1,17 +1,17 @@
-# 🐘 Migración de OdontoNova a PostgreSQL
+# Migración de OdontoNova a PostgreSQL
 
 Documentación y evidencias del proceso de migración del esquema de base de datos **OdontoNova** a **PostgreSQL** utilizando DBeaver y Docker.
 
 ---
 
-## 📌 1. Scripts SQL
+## 1. Scripts SQL
 
 * **`schema.sql`**: Definición de la estructura de tablas (DDL) adaptada a PostgreSQL (`SERIAL`, `BOOLEAN`, `NUMERIC`, `TIMESTAMP`).
 * **`data.sql`**: Inserción de datos de prueba (DML) para verificar la integridad relacional.
 
 ---
 
-## 📸 2. Evidencias de Creación de Tablas (DDL)
+## 2. Evidencias de Creación de Tablas (DDL)
 
 ### Tabla 1: Pacientes
 ![Pacientes](./img/1.png)
@@ -45,7 +45,7 @@ Documentación y evidencias del proceso de migración del esquema de base de dat
 
 ---
 
-## 📊 3. Modelo Entidad-Relación (ERD)
+## 3. Modelo Entidad-Relación (ERD)
 
 Diagrama relacional completo de las 10 tablas interconectadas del proyecto en PostgreSQL:
 

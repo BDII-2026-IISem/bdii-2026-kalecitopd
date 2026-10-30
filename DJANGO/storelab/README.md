@@ -1,10 +1,10 @@
-# 🦷 OdontoNova Backend API
+# OdontoNova Backend API
 
 Backend modular desarrollado en **Django 6.1.2** y **Django REST Framework (DRF)** para el sistema **OdontoNova**, siguiendo los lineamientos de la currícula de Tecnogua. El sistema implementa un robusto módulo de seguridad basado en autenticación **JWT** y un control de acceso basado en roles con matriz de permisos (**RBAC**).
 
 ---
 
-## 🚀 Características Principales
+## Características Principales
 
 * **Autenticación JWT**: Integración con `djangorestframework-simplejwt` con soporte para rotación de tokens y blacklist.
 * **Control de Acceso Basado en Roles (RBAC)**: Matriz de permisos dinámica (`ResourceRole` y `RoleUser`) validada mediante la clase personalizada `HasResourcePermission`.
@@ -14,7 +14,7 @@ Backend modular desarrollado en **Django 6.1.2** y **Django REST Framework (DRF)
 
 ---
 
-## 🛠️ Requisitos e Instalación
+## Requisitos e Instalación
 
 1. **Clonar el repositorio y entrar al proyecto**:
    ```bash
@@ -46,7 +46,7 @@ Ejecutar el servidor de desarrollo:
 
 Bash
 python manage.py runserver
-📚 Endpoints Principales y Documentación
+ Endpoints Principales y Documentación
 Swagger UI (Documentación Interactiva): http://127.0.0.1:8000/api/docs/
 
 ReDoc: http://127.0.0.1:8000/api/redoc/
@@ -78,7 +78,7 @@ Los permisos iniciales de usuarios se crean o sincronizan con
 El frontend mantiene los nombres de campos `snake_case` que exponen los
 serializers DRF de este proyecto.
 
-🛡️ Módulo de Seguridad y RBAC
+ Módulo de Seguridad y RBAC
 El sistema protege los ViewSets de negocio evaluando el atributo resource_name mediante el mixin HasResourcePermission. Los códigos de respuesta HTTP implementados cumplen con los estándares de seguridad:
 
 401 Unauthorized: Petición rechazada por ausencia o invalidez del Token JWT.
@@ -104,5 +104,5 @@ Los antiguos módulos de productos y ventas quedan fuera de las aplicaciones y
 rutas activas. Sus archivos y tablas existentes no se eliminan para conservar
 los datos previos.
 
-👨‍💻 Autor
+‍ Autor
 Desarrollado como parte del programa de backend avanzado con Django.

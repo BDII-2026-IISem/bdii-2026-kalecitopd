@@ -1017,13 +1017,13 @@ CALL sp_ora_q5_pagos_pagados();
 
 ![Resultado Consulta 5](oracle/5.png)
 
-# 🦷 Proyecto OdontoNova - Sistema de Gestión Odontológica
+# Proyecto OdontoNova - Sistema de Gestión Odontológica
 
 Repositorio oficial para el desarrollo del segundo examen del núcleo de bases de datos. El proyecto **OdontoNova** implementa el esquema relacional y reglas de negocio automatizadas mediante **Triggers (Disparadores)** en cuatro motores corporativos: **Oracle, PostgreSQL, MySQL y MS SQL Server**.
 
 ---
 
-## 📋 Tabla de Contenidos
+## Tabla de Contenidos
 1. [Descripción del Proyecto](#-descripción-del-proyecto)
 2. [Entorno y Arquitectura (Docker)](#-entorno-y-arquitectura-docker)
 3. [Implementación de Triggers y Evidencias](#-implementación-de-triggers-y-evidencias)
@@ -1034,7 +1034,7 @@ Repositorio oficial para el desarrollo del segundo examen del núcleo de bases d
 
 ---
 
-## 🏥 1. Descripción del Proyecto
+## 1. Descripción del Proyecto
 **OdontoNova** automatiza el control operativo de una clínica odontológica. Para garantizar la integridad de los datos, se desarrollaron disparadores a nivel de base de datos que validan automáticamente:
 * Estados iniciales por defecto en las citas.
 * Fechas de inicio obligatorias y rangos de edad/nacimiento.
@@ -1042,7 +1042,7 @@ Repositorio oficial para el desarrollo del segundo examen del núcleo de bases d
 
 ---
 
-## ⚙️ 2. Entorno y Arquitectura (Docker)
+## 2. Entorno y Arquitectura (Docker)
 Los motores de bases de datos corren bajo contenedores en Ubuntu y se administran de manera centralizada desde **DBeaver**:
 * **Oracle Database** (Puerto 1521)
 * **PostgreSQL** (Puerto 5432)
@@ -1051,7 +1051,7 @@ Los motores de bases de datos corren bajo contenedores en Ubuntu y se administra
 
 ---
 
-## 🛠️ 3. Implementación de Triggers y Evidencias
+## 3. Implementación de Triggers y Evidencias
 
 ### 3.1. Oracle Database
 Se implementaron triggers de fila (`BEFORE INSERT`) para asegurar valores por defecto y validaciones de integridad de campos obligatorios en las tablas del sistema.

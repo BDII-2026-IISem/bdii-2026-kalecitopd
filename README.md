@@ -1,324 +1,121 @@
-# Laboratorio de Motores de Bases de Datos con Docker Compose
+# Proyecto BDD - Bases de Datos II
 
-## 📌 Descripción
+Este repositorio reúne dos líneas de trabajo relacionadas entre sí:
 
-Este proyecto corresponde a un laboratorio de bases de datos realizado utilizando **WSL2 sobre Ubuntu** y **Docker Compose**.
+- un laboratorio de bases de datos con Docker Compose y varios motores de BD
+- un proyecto web con Django y Angular siguiendo la guía académica, adaptada a la lógica real del backend y el frontend
 
-El objetivo principal fue preparar un entorno de trabajo donde se pudieran ejecutar diferentes motores de bases de datos de manera independiente mediante contenedores Docker.
+La intención es documentar tanto la parte práctica de administración de bases de datos como la parte de desarrollo de una API y una interfaz que consumen ese backend.
 
-Durante la práctica se trabajó con los siguientes motores:
+## Objetivo general
 
-- **MySQL 8.0**
-- **PostgreSQL 17**
-- **Microsoft SQL Server 2022**
-- **Oracle Database XE 21c**
+Preparar un entorno de trabajo para aprender y validar:
 
-También se configuró una red Docker compartida, almacenamiento persistente y diferentes herramientas para comprobar el funcionamiento de cada motor.
+- instalación y configuración de distintos motores de bases de datos
+- gestión de usuarios, permisos y conexiones remotas
+- desarrollo de una API REST con Django y DRF
+- autenticación JWT y control de acceso por roles
+- consumo de la API desde una interfaz Angular
 
----
+## Estructura principal
 
-## 🎯 Objetivos
+```text
+BDD/
+├── README.md
+├── DJANGO/
+├── frontend 2026/
+├── OdontoNova/
+├── evidencias/
+├── base.md
+├── ...
+```
 
-- Preparar el entorno de trabajo con WSL2, Docker Engine y Docker Compose.
-- Crear la estructura de carpetas utilizada para el laboratorio.
-- Crear una red Docker compartida para los diferentes servicios.
-- Desplegar los cuatro motores de bases de datos mediante contenedores.
-- Verificar el funcionamiento de cada servicio.
-- Crear bases de datos y usuarios de prueba.
-- Configurar los puertos necesarios para las conexiones.
-- Instalar las herramientas necesarias para administrar SQL Server.
-- Identificar y solucionar los errores encontrados durante la instalación.
+## Contenido del repositorio
 
----
+### 1. Laboratorio de motores de bases de datos
 
-## 🛠️ Tecnologías utilizadas
+Se trabajó con los siguientes motores:
 
-| Tecnología | Versión / configuración |
+- MySQL 8.0
+- PostgreSQL 17
+- Microsoft SQL Server 2022
+- Oracle Database XE 21c
+
+Cada uno quedó configurado con Docker Compose, usando una red compartida y almacenamiento persistente para validar conexiones, creación de bases, usuarios y pruebas funcionales.
+
+### 2. Backend Django
+
+La carpeta `DJANGO` contiene la API principal del proyecto, con:
+
+- Django
+- Django REST Framework
+- JWT
+- control de permisos por recursos y roles
+- estructura modular por aplicaciones
+
+### 3. Frontend Angular
+
+La carpeta `frontend 2026/DJANGO` contiene la aplicación web que consume la API, con Angular 22, PrimeNG y Tailwind, siguiendo la guía y adaptando el consumo a los módulos reales del proyecto.
+
+### 4. Evidencias y modelos
+
+En `OdontoNova/` y `evidencias/` se encuentran scripts, capturas y documentación de las pruebas realizadas, incluyendo migración, creación de tablas y validación del esquema.
+
+## Tecnologías principales
+
+| Tecnología | Uso |
 |---|---|
-| Windows | Sistema principal |
-| Ubuntu | Ejecutado mediante WSL2 |
-| Docker Engine | 29.7.2 |
-| Docker Compose | 5.5.0 |
-| MySQL | 8.0 |
-| PostgreSQL | 17 |
-| Microsoft SQL Server | 2022 |
-| Oracle Database | XE 21c |
+| WSL2 + Ubuntu | entorno de desarrollo |
+| Docker Engine | contenedores |
+| Docker Compose | orquestación |
+| MySQL | motor de base de datos |
+| PostgreSQL | motor de base de datos |
+| SQL Server | motor de base de datos |
+| Oracle XE | motor de base de datos |
+| Django | backend |
+| DRF | API REST |
+| JWT | autenticación |
+| Angular 22 | frontend |
 
----
+## Requisitos
 
-## 📁 Estructura del proyecto
+- Windows con WSL2
+- Docker y Docker Compose instalados
+- Python 3.x
+- Node.js 22+
+- npm 10+
 
-La estructura principal utilizada durante el laboratorio fue:
+## Inicio rápido
 
-```text
-~/ia-lab/
-├── services/
-│   └── motores-bd/
-│       ├── mysql/
-│       ├── postgres/
-│       ├── mssql/
-│       └── oracle/
-│
-└── data/
-    ├── mysql/
-    ├── postgres/
-    ├── mssql/
-    └── oracle/
-```
-
-La carpeta `services/motores-bd/` contiene la configuración de los diferentes servicios, mientras que `data/` se utiliza para conservar los datos de los motores de forma persistente.
-
----
-
-## 🌐 Red y puertos
-
-Para permitir la comunicación entre los servicios se creó la red Docker:
-
-```text
-ia-lab-network
-```
-
-Los puertos utilizados fueron:
-
-| Motor | Contenedor | Puerto |
-|---|---|---:|
-| MySQL | `mysql-server` | `3306` |
-| PostgreSQL | `postgres-server` | `5432` |
-| SQL Server | `mssql-server` | `1433` |
-| Oracle XE | `oracle-server` | `1521` |
-
-La base de trabajo utilizada fue:
-
-```text
-tecnogua
-```
-
-También se utilizó la base de prueba:
-
-```text
-bd_clase1
-```
-
----
-
-# 🐳 Preparación del entorno
-
-Primero se preparó Ubuntu mediante **WSL2** y se instalaron Docker Engine y Docker Compose.
-
-Para comprobar la instalación se utilizaron comandos como:
+### Backend Django
 
 ```bash
-docker --version
-docker compose version
-docker run hello-world
+cd "$HOME/ia-lab/projecs/base de datos 2/BDD/DJANGO"
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
 ```
 
-El comando `hello-world` permitió comprobar que Docker podía descargar una imagen y ejecutar correctamente un contenedor.
-
-Después se crearon las carpetas necesarias y la red compartida:
+### Frontend Angular
 
 ```bash
-mkdir -p ~/ia-lab/services/motores-bd
-mkdir -p ~/ia-lab/data
+cd "$HOME/ia-lab/projecs/base de datos 2/BDD/frontend 2026/DJANGO"
+npm install
+npm start
 ```
 
-La red utilizada por los servicios fue:
+La API del backend queda normalmente en `http://127.0.0.1:8000` y la app frontend en `http://localhost:4200`.
 
-```bash
-docker network create ia-lab-network
-```
+## Nota
 
----
+Este repositorio combina trabajo académico y desarrollo práctico. La parte de motores de bases de datos sirve para comprender el funcionamiento real de varios SGBD; la parte de Django y Angular representa la aplicación concreta que consume y valida la guía de trabajo del curso.
 
-# 🗄️ MySQL 8.0
+## Estado
 
-MySQL se configuró utilizando el contenedor:
+El proyecto está en proceso de integración y documentación, con ejercicios, pruebas, modelos y evidencia en varias carpetas del repositorio. La organización actual permite trabajar tanto la parte de infraestructura de bases de datos como la parte de aplicación web según la guía de estudio.
 
-```text
-mysql-server
-```
-
-y el puerto:
-
-```text
-3306
-```
-
-La base inicial utilizada fue:
-
-```text
-tecnogua
-```
-
-Después de iniciar el contenedor se verificó su estado y se realizó una conexión utilizando el cliente de MySQL.
-
-Una de las consultas utilizadas fue:
-
-```sql
-SHOW DATABASES;
-```
-
-Con esto se comprobó que la base `tecnogua` estaba disponible.
-
-También se dejó preparado el procedimiento para crear un usuario remoto y realizar respaldos mediante `mysqldump`.
-
-### ⚠️ Problema encontrado
-
-Durante una prueba de autenticación se presentó un rechazo de acceso. El problema se solucionó utilizando la contraseña configurada en el archivo `.env`.
-
-Esto permitió comprobar la importancia de revisar correctamente las variables de configuración antes de intentar conectarse al motor.
-
----
-
-# 🐘 PostgreSQL 17
-
-PostgreSQL se configuró mediante el contenedor:
-
-```text
-postgres-server
-```
-
-utilizando el puerto:
-
-```text
-5432
-```
-
-La base inicial fue:
-
-```text
-tecnogua
-```
-
-Después de iniciar el servicio se utilizó `psql` para comprobar las bases disponibles.
-
-También se creó una base de prueba:
-
-```sql
-CREATE DATABASE bd_clase1;
-```
-
-Posteriormente se creó el usuario:
-
-```text
-admin
-```
-
-También se configuró el acceso para que PostgreSQL pudiera escuchar en todas las interfaces.
-
-### 🔥 Configuración del firewall
-
-Se instaló y configuró UFW para permitir el puerto utilizado por PostgreSQL:
-
-```text
-5432
-```
-
----
-
-# 🟦 Microsoft SQL Server 2022
-
-SQL Server se ejecutó mediante el contenedor:
-
-```text
-mssql-server
-```
-
-utilizando el puerto:
-
-```text
-1433
-```
-
-Una vez iniciado el servicio se utilizaron las herramientas de Microsoft para administrar la base de datos.
-
-Se instaló:
-
-```text
-mssql-tools18
-unixodbc-dev
-```
-
-y se agregó la ruta correspondiente al `PATH` para poder utilizar `sqlcmd`.
-
-Para comprobar la instalación se verificó la ubicación de `sqlcmd`.
-
-Con SQL Server se realizaron pruebas como:
-
-- Listar las bases de datos.
-- Crear `bd_clase1`.
-- Verificar el contexto de la base.
-- Crear el login `admin`.
-- Comprobar la conectividad del servicio.
-
----
-
-# 🟠 Oracle Database XE 21c
-
-Oracle XE se configuró utilizando el contenedor:
-
-```text
-oracle-server
-```
-
-con el puerto:
-
-```text
-1521
-```
-
-El servicio utilizado para la conexión fue:
-
-```text
-TECNOGUA
-```
-
-### ⚠️ Problema encontrado
-
-Durante el primer arranque de Oracle se presentaron errores relacionados con el directorio utilizado para almacenar los datos.
-
-El contenedor tuvo que detenerse y posteriormente se creó el directorio:
-
-```bash
-mkdir -p ~/ia-lab/data/oracle
-```
-
-Después se ajustaron los permisos necesarios y se volvió a iniciar el contenedor.
-
-En el segundo arranque Oracle quedó en estado:
-
-```text
-healthy
-```
-
-y los registros indicaron:
-
-```text
-DATABASE IS READY TO USE
-```
-
-Después se realizó una conexión mediante `SQL*Plus`.
-
-Se consultaron los usuarios existentes y se creó el usuario/esquema:
-
-```text
-almacendb_admin
-```
-
-con los privilegios:
-
-```text
-CONNECT
-RESOURCE
-```
-
-Finalmente se comprobó la conexión utilizando el servicio `TECNOGUA`.
-
----
-
-# 🔎 Verificación de los servicios
-
-Una de las comprobaciones principales fue revisar el estado de los contenedores para confirmar que los motores estuvieran funcionando correctamente.
 
 Los servicios esperados son:
 
@@ -335,7 +132,7 @@ Oracle quedó funcionando correctamente después de solucionar el problema relac
 
 ---
 
-# 📸 Evidencias
+# Evidencias
 
 Las evidencias de la práctica se encuentran dentro de la carpeta:
 
@@ -364,7 +161,7 @@ Algunas de las evidencias muestran:
 
 ---
 
-# ⚠️ Problemas encontrados y soluciones
+# Problemas encontrados y soluciones
 
 Durante el laboratorio se presentaron algunos inconvenientes.
 
@@ -391,7 +188,7 @@ Este procedimiento permitió que Oracle iniciara correctamente.
 
 ---
 
-# 🔐 Seguridad
+# Seguridad
 
 Las contraseñas utilizadas durante el laboratorio son únicamente para fines académicos y no deben utilizarse en un entorno real.
 
@@ -407,7 +204,7 @@ Para un entorno de producción se deberían utilizar secretos, usuarios con los 
 
 ---
 
-# 📚 Fuentes consultadas
+# Fuentes consultadas
 
 La práctica se realizó tomando como referencia las guías proporcionadas para el laboratorio:
 
@@ -419,7 +216,7 @@ La práctica se realizó tomando como referencia las guías proporcionadas para 
 
 ---
 
-# 👨‍💻 Información del trabajo
+# Información del trabajo
 
 **Estudiante:** Kaleth Perez  
 **Asignatura:** Base de Datos  
@@ -428,7 +225,7 @@ La práctica se realizó tomando como referencia las guías proporcionadas para 
 
 ---
 
-# 🤖 Uso de Inteligencia Artificial
+# Uso de Inteligencia Artificial
 
 Durante el desarrollo del laboratorio se utilizó **ChatGPT** como herramienta de apoyo.
 
@@ -444,7 +241,7 @@ La herramienta fue utilizada como apoyo para el aprendizaje y desarrollo de la a
 
 ---
 
-## ✅ Conclusión
+## Conclusión
 
 La práctica permitió comprobar el funcionamiento de diferentes motores de bases de datos utilizando Docker Compose.
 

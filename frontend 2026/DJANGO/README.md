@@ -1,62 +1,57 @@
-# OdontoNova - Frontend
+# StoreLab Django · Frontend Angular 22
 
-Aplicación web de OdontoNova desarrollada con Angular 22, componentes standalone, Signals, zoneless, PrimeNG 22/Aura y Tailwind CSS 4. Sigue las capas de la guía académica y adapta sus ejemplos a las entidades y los permisos reales del backend en `../../DJANGO`.
+Frontend del laboratorio **StoreLab Django**: Angular 22 (standalone + Signals), PrimeNG 22 y Tailwind CSS 4. Consume la API del backend `pry-django` (Django 5 + DRF + JWT + RBAC).
 
-## Requisitos
+## ISS realizados
 
-- Node.js 22
-- npm 10 o superior
-- Backend Django disponible en `http://127.0.0.1:8000`
+| ISS | Qué se hizo |
+|-----|-------------|
+| 00 | Requisitos previos (Node, Angular CLI, backend listo) |
+| 01 | Bootstrap del proyecto Angular 22 con CLI |
+| 01A | Esqueleto Header / Aside / contenido / Footer |
+| 01B | Menú PrimeNG y primera interacción |
+| 02 | Núcleo: environment, modelos, servicios y layout |
+| 03 | CRUD de clientes |
+| 04 | CRUD de tipos de producto |
+| 05 | CRUD de productos |
+| 06 | Ventas y detalle |
+| 07 | Dashboard |
+| 08 | Autenticación JWT y refresh |
+| 09 | Guards y RBAC en la UI |
+| 10 | Administración RBAC (usuarios, roles, recursos) |
+| 11 | Build, calidad y resolución de problemas |
 
-## Ejecutar en Ubuntu/WSL
+## Pasos para el frontend
 
-Abre dos terminales de Ubuntu. En la primera, inicia el backend:
+1. **Levantar el backend** (`pry-django`) en `http://localhost:8000`:
+   ```bash
+   python manage.py migrate
+   python manage.py seed_rbac --username <usuario>
+   python manage.py runserver 8000
+   ```
+   > `API_ACCESS=open` para la Fase I (sin login) y `API_ACCESS=rbac` para la Fase II (JWT + permisos).
 
-```bash
-cd "$HOME/ia-lab/projecs/base de datos 2/BDD/DJANGO"
-source venv/bin/activate
-# Solo la primera vez, si aún no tienes un usuario administrador:
-python manage.py createsuperuser
-python manage.py runserver
-```
+2. **Instalar dependencias** del frontend:
+   ```bash
+   cd front-storelab-django
+   npm install
+   ```
 
-En la segunda, inicia Angular:
+3. **Configurar el entorno** en `src/environments/environment.ts`:
+   ```ts
+   apiUrl: 'http://localhost:8000/api',   // sin "/" al final
+   ```
 
-```bash
-cd "$HOME/ia-lab/projecs/base de datos 2/BDD/frontend 2026/DJANGO"
-npm install
-npm start
-```
+4. **Correr el proyecto**:
+   ```bash
+   npm start      # http://localhost:4200
+   ```
 
-Abre `http://localhost:4200`. El proxy de desarrollo reenvía las solicitudes `/api` al servidor Django. Para entrar, usa las credenciales de un usuario de Django.
+5. **Build de producción**:
+   ```bash
+   npm run build
+   ```
 
-Si el backend muestra `That port is already in use`, Django ya está ejecutándose; no abras un segundo servidor. Deja esa terminal activa.
+## Autor
 
-## Módulos y comportamiento
-
-- Resumen de pacientes y citas, según los permisos del usuario.
-- CRUD de pacientes, odontólogos, sillones, citas, historias clínicas, planes,
-  procedimientos, detalles, sesiones clínicas y pagos.
-- Registro de evoluciones desde cada historia clínica.
-- Administración de usuarios, roles, asignaciones y permisos.
-- Perfil del usuario y actualización de correo.
-- Búsqueda local, confirmación antes de eliminar y manejo visible de errores
-  401/403/validación del backend.
-- Menú y rutas protegidos por los permisos efectivos del RBAC de OdontoNova.
-- Renovación de JWT en un solo vuelo al recibir 401; logout revoca el refresh.
-
-El contrato local usa `snake_case`, listas sin envoltorio y rutas DRF con slash
-final. La guía muestra un backend StoreLab distinto; sus ejemplos de clientes,
-productos y ventas no reemplazan los módulos odontológicos de este proyecto.
-
-La interfaz no puede recuperar ni corregir credenciales. Si el navegador dice
-“Usuario o contraseña incorrectos”, crea un usuario con
-`python manage.py createsuperuser` o cambia su clave con
-`python manage.py changepassword <usuario>` en la carpeta del backend.
-
-## Validar
-
-```bash
-npm test -- --watch=false
-npm run build
-```
+**Estudiante:** Kaleth Perez · **Asignatura:** Base de Datos II · **Docente:** Jaider Quinterodale n
