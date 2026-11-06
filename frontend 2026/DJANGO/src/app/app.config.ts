@@ -12,6 +12,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authInterceptor])),
     provideRouter(routes),
     providePrimeNG({
+       license: 'eyJpZCI6IjVkZDAyOTE4LTBjZWYtNDc4Ny04OTMwLTc5MmZkZWYwNmE3NiIsInByb2R1Y3QiOiJwcmltZXVpIiwidGllciI6ImNvbW11bml0eSIsInR5cGUiOiJkZXYiLCJpYXQiOjE3OTM4OTU1NDUsImV4cCI6MTgyNTQzMTU0NX0.eGTOCaO2vV9Cf9_2r8xWp-RHtX4FjMJXI5cL8g5XSFBbvDkKzUbEeO1EcLAX-OqnKaakZevAnY5NF3bHLNnDBw',
       theme: {
         preset: Aura,
         options: { darkModeSelector: false },
