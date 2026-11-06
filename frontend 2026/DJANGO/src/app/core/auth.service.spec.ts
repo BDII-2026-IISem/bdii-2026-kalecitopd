@@ -38,7 +38,7 @@ describe('AuthService', () => {
       method: '*',
       path: '/api/pacientes/',
       roleId: 2,
-      roleName: 'Recepción',
+      roleName: 'RECEPCION',
     };
     let result: UserProfile | undefined;
 

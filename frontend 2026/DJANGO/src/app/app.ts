@@ -56,10 +56,8 @@ export class App {
       label: 'ADMINISTRACIÓN',
       items: [
         { label: 'Usuarios', icon: 'pi pi-user', resource: 'users', url: '/resources/users' },
-        { label: 'Roles', icon: 'pi pi-shield', resource: 'roles', url: '/resources/roles' },
-        { label: 'Usuarios por rol', icon: 'pi pi-user-plus', resource: 'role-users', url: '/resources/role-users' },
+        { label: 'Roles y permisos', icon: 'pi pi-shield', resource: 'roles', url: '/resources/roles' },
         { label: 'Recursos', icon: 'pi pi-database', resource: 'resources', url: '/resources/resources' },
-        { label: 'Permisos', icon: 'pi pi-lock', resource: 'resource-roles', url: '/resources/resource-roles' },
       ],
     },
   ];
@@ -104,7 +102,7 @@ export class App {
     sesiones: 'Sesiones clínicas',
     pagos: 'Pagos',
     users: 'Usuarios',
-    roles: 'Roles',
+    roles: 'Roles y permisos',
     'role-users': 'Asignación de roles',
     resources: 'Recursos del sistema',
     'resource-roles': 'Permisos por rol',

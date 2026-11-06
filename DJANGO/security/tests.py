@@ -1,4 +1,7 @@
+from io import StringIO
+
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
@@ -58,24 +61,56 @@ class AuthenticationApiTests(APITestCase):
         self.assertEqual(response.data["email"], "updated@example.test")
 
     def test_permissions_endpoint_returns_effective_resource_grants(self):
-        role = Role.objects.create(name="Recepción")
+        role = Role.objects.create(name="RECEPCION")
         resource = Resource.objects.create(name="pacientes")
         RoleUser.objects.create(user=self.user, role=role)
-        ResourceRole.objects.create(role=role, resource=resource)
+        ResourceRole.objects.create(
+            role=role,
+            resource=resource,
+            can_create=True,
+            can_read=True,
+            can_update=True,
+            can_delete=True,
+        )
         self.client.force_authenticate(self.user)
 
         response = self.client.get(reverse("auth_permissions"))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.data["permissions"],
-            [{
-                "resource": "pacientes",
-                "method": "*",
-                "path": "/api/pacientes/",
-                "roleId": role.id,
-                "roleName": "Recepción",
-            }],
+            {grant["method"] for grant in response.data["permissions"]},
+            {"GET", "POST", "PUT", "PATCH", "DELETE"},
+        )
+        self.assertTrue(all(grant["path"] == "/api/pacientes/" for grant in response.data["permissions"]))
+        self.assertTrue(all(grant["roleName"] == "RECEPCION" for grant in response.data["permissions"]))
+
+    def test_resource_api_enforces_individual_crud_permissions(self):
+        role = Role.objects.create(name="RECEPCION")
+        resource = Resource.objects.create(name="users")
+        RoleUser.objects.create(user=self.user, role=role)
+        ResourceRole.objects.create(role=role, resource=resource, can_read=True)
+        self.client.force_authenticate(self.user)
+
+        list_response = self.client.get(reverse("user-list"))
+        create_response = self.client.post(
+            reverse("user-list"),
+            {
+                "username": "blocked-user",
+                "email": "blocked@example.test",
+                "password": "Clinic-Access-9482!",
+            },
+            format="json",
+        )
+
+        self.assertEqual(list_response.status_code, 200)
+        self.assertEqual(create_response.status_code, 403)
+
+    def test_seed_security_creates_the_five_initial_roles(self):
+        call_command("seed_security", stdout=StringIO())
+
+        self.assertEqual(
+            set(Role.objects.values_list("name", flat=True)),
+            {"ADMIN", "RECEPCION", "ODONTOLOGO", "AUXILIAR", "CARTERA"},
         )
 
     def test_superuser_permissions_include_wildcard_grant(self):

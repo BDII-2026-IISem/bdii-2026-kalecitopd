@@ -29,6 +29,10 @@ class Resource(models.Model):
 class ResourceRole(models.Model):
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
+    can_create = models.BooleanField(default=False)
+    can_read = models.BooleanField(default=False)
+    can_update = models.BooleanField(default=False)
+    can_delete = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('role', 'resource')

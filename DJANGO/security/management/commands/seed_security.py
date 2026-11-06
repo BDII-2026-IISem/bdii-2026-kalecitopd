@@ -8,7 +8,7 @@ class Command(BaseCommand):
         self.stdout.write("Iniciando siembra de datos de seguridad...")
 
         role_resources = {
-            "Administrador": (
+            "ADMIN": (
                 "pacientes",
                 "odontologos",
                 "sillones",
@@ -25,13 +25,13 @@ class Command(BaseCommand):
                 "resource-roles",
                 "users",
             ),
-            "Recepcionista": (
+            "RECEPCION": (
                 "pacientes",
                 "odontologos",
                 "sillones",
                 "citas",
             ),
-            "Odontólogo": (
+            "ODONTOLOGO": (
                 "pacientes",
                 "citas",
                 "historias",
@@ -40,14 +40,14 @@ class Command(BaseCommand):
                 "detalles-tratamiento",
                 "sesiones",
             ),
-            "Auxiliar": (
+            "AUXILIAR": (
                 "pacientes",
                 "citas",
                 "historias",
                 "procedimientos",
                 "sesiones",
             ),
-            "Cartera": (
+            "CARTERA": (
                 "pacientes",
                 "tratamientos",
                 "pagos",
@@ -82,6 +82,12 @@ class Command(BaseCommand):
                 _, created = ResourceRole.objects.get_or_create(
                     role=role,
                     resource=resource_objs[resource_name],
+                    defaults={
+                        "can_create": True,
+                        "can_read": True,
+                        "can_update": True,
+                        "can_delete": True,
+                    },
                 )
                 if created:
                     self.stdout.write(

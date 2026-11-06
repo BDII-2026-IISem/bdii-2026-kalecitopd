@@ -24,6 +24,13 @@ export const routes: Routes = [
     redirectTo: 'resources/pacientes',
   },
   {
+    path: 'resources/roles',
+    loadComponent: () =>
+      import('./features/resources/rbac-page').then((module) => module.RbacPage),
+    canActivate: [authGuard, permissionGuard],
+    data: { resource: 'roles' },
+  },
+  {
     path: 'resources/:resource',
     loadComponent: () =>
       import('./features/resources/resource-page').then((module) => module.ResourcePage),

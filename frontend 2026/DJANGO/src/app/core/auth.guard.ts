@@ -22,6 +22,8 @@ export const guestGuard: CanActivateFn = () => {
 
 export const permissionGuard: CanActivateFn = (route) => {
   const auth = inject(AuthService);
-  const resource = route.paramMap.get('resource') ?? '';
+  const configuredResource = route.data['resource'];
+  const resource = route.paramMap.get('resource') ??
+    (typeof configuredResource === 'string' && configuredResource !== 'resource' ? configuredResource : '');
   return auth.canResource(resource) || inject(Router).createUrlTree(['/forbidden']);
 };

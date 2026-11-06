@@ -1,0 +1,166 @@
+<div class="rbac-heading">
+  <div>
+    <span class="eyebrow">GESTIÓN ODONTONOVA</span>
+    <h1><i class="pi pi-shield"></i> Roles y permisos (RBAC)</h1>
+    <p>Administra roles, asigna usuarios y define permisos de CRUD sobre las entidades del negocio.</p>
+  </div>
+</div>
+
+@if (errorMessage()) {
+  <div class="rbac-alert error" role="alert"><i class="pi pi-exclamation-triangle"></i>{{ errorMessage() }}</div>
+}
+@if (successMessage()) {
+  <div class="rbac-alert success" role="status"><i class="pi pi-check-circle"></i>{{ successMessage() }}</div>
+}
+
+<section class="rbac-card">
+  <nav class="rbac-tabs" aria-label="Administración RBAC">
+    <button type="button" [class.active]="activeTab() === 'roles'" (click)="selectTab('roles')"><i class="pi pi-user"></i> Roles</button>
+    @if (canShowUsersTab()) {
+      <button type="button" [class.active]="activeTab() === 'users'" (click)="selectTab('users')"><i class="pi pi-users"></i> Usuarios</button>
+    }
+    @if (canShowResourcesTab()) {
+      <button type="button" [class.active]="activeTab() === 'resources'" (click)="selectTab('resources')"><i class="pi pi-database"></i> Recursos</button>
+    }
+  </nav>
+
+  @if (loading()) {
+    <div class="rbac-empty"><i class="pi pi-spin pi-spinner"></i> Cargando datos RBAC...</div>
+  } @else if (activeTab() === 'roles') {
+    <div class="role-layout">
+      <aside class="role-list">
+        <div class="role-list-heading">
+          <h2>Roles</h2>
+          @if (canCreateRoles()) {
+            <button type="button" class="rbac-primary compact" (click)="beginNewRole()"><i class="pi pi-plus"></i> Nuevo rol</button>
+          }
+        </div>
+        <label class="rbac-search"><i class="pi pi-search"></i><input type="search" placeholder="Buscar rol..." [ngModel]="search()" (ngModelChange)="search.set($event)" /></label>
+        @for (role of filteredRoles(); track recordId(role)) {
+          <button type="button" class="role-option" [class.selected]="recordId(role) === selectedRoleId()" (click)="selectRole(recordId(role))">
+            <i class="pi pi-shield"></i>
+            <span><strong>{{ text(role, 'name') }}</strong><small>{{ text(role, 'description') || 'Sin descripción' }}</small></span>
+          </button>
+        } @empty {
+          <p class="rbac-empty small">No hay roles registrados.</p>
+        }
+      </aside>
+
+      <section class="role-editor">
+        <header class="editor-heading">
+          <div><h2><i class="pi pi-shield"></i> {{ selectedRole() ? 'Editar rol: ' + roleName() : 'Nuevo rol' }}</h2><p>Configura sus datos, usuarios asignados y permisos.</p></div>
+          <div class="editor-actions">
+            @if (selectedRole() && canDeleteRoles()) {
+              <button type="button" class="rbac-button danger" [disabled]="saving()" (click)="deleteRole()"><i class="pi pi-trash"></i> Eliminar</button>
+            }
+            @if (selectedRole() ? canEditRoles() : canCreateRoles()) {
+              <button type="button" class="rbac-primary" [disabled]="saving()" (click)="saveRole()">@if (saving()) {<i class="pi pi-spin pi-spinner"></i>} @else {<i class="pi pi-save"></i>} Guardar cambios</button>
+            }
+          </div>
+        </header>
+
+        <div class="role-fields">
+          <label><span>Nombre del rol <b>*</b></span><input type="text" [ngModel]="roleName()" (ngModelChange)="roleName.set($event)" [disabled]="selectedRole() ? !canEditRoles() : !canCreateRoles()" maxlength="50" /></label>
+          <label><span>Descripción</span><input type="text" [ngModel]="roleDescription()" (ngModelChange)="roleDescription.set($event)" [disabled]="selectedRole() ? !canEditRoles() : !canCreateRoles()" /></label>
+        </div>
+
+        @if (selectedRole() && canShowUsersTab()) {
+          <section class="inline-section">
+            <h3>Usuarios con este rol</h3>
+            <div class="user-chips">
+              @for (assignment of roleUsers(); track recordId(assignment)) {
+                @if (isAssignmentForRole(assignment)) {
+                  @let user = userForAssignment(assignment);
+                  @if (user) {
+                    <span class="user-chip"><i class="pi pi-user"></i>{{ userLabel(user) }}
+                      @if (auth.canPermission('DELETE', '/api/role-users/')) {
+                        <button type="button" [attr.aria-label]="'Quitar rol de ' + userLabel(user)" (click)="removeAssignment(assignment)">×</button>
+                      }
+                    </span>
+                  }
+                }
+              }
+              @if (!hasRoleAssignment(selectedRoleId())) {<span class="muted">Aún no hay usuarios asignados.</span>}
+            </div>
+            @if (auth.canPermission('POST', '/api/role-users/')) {
+              <div class="assign-row">
+                <select [ngModel]="assignmentOptionId()" (ngModelChange)="setAssignmentOption($event)">
+                  <option [ngValue]="null">Seleccionar usuario...</option>
+                  @for (user of users(); track recordId(user)) {
+                    @if (!isUserAssignedToSelectedRole(recordId(user))) {
+                      <option [ngValue]="recordId(user)">{{ userLabel(user) }} · {{ text(user, 'email') || text(user, 'username') }}</option>
+                    }
+                  }
+                </select>
+                <button type="button" class="rbac-button" [disabled]="assignmentOptionId() === null || saving()" (click)="assignRole()"><i class="pi pi-plus"></i> Asignar usuario</button>
+              </div>
+            }
+          </section>
+        }
+
+        @if (canShowResourcesTab()) {
+          <section class="inline-section permission-section">
+            <div class="permission-heading">
+              <div><h3>Permisos de recursos (entidades del negocio)</h3><p>Define los permisos CRUD que tendrá este rol sobre cada entidad del negocio.</p></div>
+              <div class="permission-actions">
+                <button type="button" class="rbac-button" [disabled]="!selectedRole() || !canEditGrants()" (click)="markAllPermissions(true)"><i class="pi pi-check-square"></i> Marcar todo</button>
+                <button type="button" class="rbac-button" [disabled]="!selectedRole() || !canEditGrants()" (click)="markAllPermissions(false)"><i class="pi pi-times"></i> Desmarcar todo</button>
+              </div>
+            </div>
+            <div class="permission-table-wrap">
+              <table class="permission-table">
+                <thead><tr><th>Recurso (Entidad)</th><th><i class="pi pi-plus"></i> Crear (C)</th><th><i class="pi pi-eye"></i> Leer (R)</th><th><i class="pi pi-pencil"></i> Actualizar (U)</th><th><i class="pi pi-trash"></i> Eliminar (D)</th></tr></thead>
+                <tbody>
+                  @for (resource of resources(); track recordId(resource)) {
+                    <tr><td><i class="pi pi-database"></i><strong>{{ resourceLabel(resource) }}</strong></td>
+                      @for (key of ['can_create', 'can_read', 'can_update', 'can_delete']; track key) {
+                        <td><input type="checkbox" [attr.aria-label]="resourceLabel(resource) + ' ' + key" [checked]="permission(recordId(resource), $any(key))" [disabled]="!selectedRole() || !canEditGrants()" (change)="setPermission(recordId(resource), $any(key), $any($event.target).checked)" /></td>
+                      }
+                    </tr>
+                  } @empty {
+                    <tr><td colspan="5" class="muted">No hay recursos disponibles. Crea recursos desde la pestaña Recursos.</td></tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            @if (selectedRole() && canEditGrants()) {
+              <div class="permission-save"><button type="button" class="rbac-primary" [disabled]="saving()" (click)="savePermissions()">@if (saving()) {<i class="pi pi-spin pi-spinner"></i>} @else {<i class="pi pi-save"></i>} Guardar permisos</button></div>
+            }
+          </section>
+        } @else {
+          <div class="rbac-note"><i class="pi pi-info-circle"></i> Tu cuenta no tiene acceso a la matriz de recursos/permisos.</div>
+        }
+      </section>
+    </div>
+  } @else if (activeTab() === 'users') {
+    <section class="tab-content">
+      <header class="tab-heading"><div><h2>Usuarios y roles</h2><p>Consulta los roles actuales y asigna o retira accesos a cada usuario.</p></div></header>
+      <label class="user-select"><span>Usuario</span><select [ngModel]="selectedUserId()" (ngModelChange)="setSelectedUser($event)"><option [ngValue]="null">Selecciona un usuario</option>@for (user of users(); track recordId(user)) {<option [ngValue]="recordId(user)">{{ userLabel(user) }} · {{ text(user, 'email') || text(user, 'username') }}</option>}</select></label>
+      @if (selectedUser()) {
+        <div class="assigned-role-list"><h3>Roles asignados</h3>
+          @for (assignment of userRoleAssignments(); track recordId(assignment)) {
+            @let role = roleForAssignment(assignment);
+            @if (role) {<span class="user-chip">{{ text(role, 'name') }} @if (auth.canPermission('DELETE', '/api/role-users/')) {<button type="button" (click)="removeAssignment(assignment)" aria-label="Quitar asignación">×</button>}</span>}
+          } @empty {<span class="muted">Este usuario aún no tiene roles.</span>}
+        </div>
+        @if (auth.canPermission('POST', '/api/role-users/')) {
+          <div class="assign-row user-assign"><select [ngModel]="assignmentOptionId()" (ngModelChange)="setAssignmentOption($event)"><option [ngValue]="null">Seleccionar rol...</option>@for (role of roles(); track recordId(role)) {@if (!selectedUserHasRole(recordId(role))) {<option [ngValue]="recordId(role)">{{ text(role, 'name') }}</option>}}</select><button type="button" class="rbac-primary" [disabled]="assignmentOptionId() === null || saving()" (click)="assignRole()"><i class="pi pi-plus"></i> Asignar rol</button></div>
+        }
+      }
+    </section>
+  } @else {
+    <section class="tab-content">
+      <header class="tab-heading"><div><h2>Recursos protegidos</h2><p>Entidades de negocio y seguridad disponibles en la matriz de permisos.</p></div></header>
+      @if (canCreateResources()) {
+        <form class="resource-create" (ngSubmit)="createResource()"><label><span>Nombre del recurso</span><input required maxlength="100" [ngModel]="resourceName()" (ngModelChange)="resourceName.set($event)" name="resourceName" placeholder="ej. reportes" /></label><label><span>Descripción</span><input [ngModel]="resourceDescription()" (ngModelChange)="resourceDescription.set($event)" name="resourceDescription" placeholder="Descripción opcional" /></label><button type="submit" class="rbac-primary" [disabled]="saving() || !resourceName().trim()"><i class="pi pi-plus"></i> Nuevo recurso</button></form>
+      }
+      <div class="resource-list">
+        @for (resource of resources(); track recordId(resource)) {
+          <div class="resource-row"><span class="resource-icon"><i class="pi pi-database"></i></span><div><strong>{{ resourceLabel(resource) }}</strong><small>{{ text(resource, 'description') || text(resource, 'name') }}</small></div>
+            @if (canDeleteResources()) {<button type="button" class="rbac-icon danger" [disabled]="saving()" [attr.aria-label]="'Eliminar recurso ' + resourceLabel(resource)" (click)="deleteResource(resource)"><i class="pi pi-trash"></i></button>}
+          </div>
+        } @empty {<p class="rbac-empty">No hay recursos registrados.</p>}
+      </div>
+    </section>
+  }
+</section>

@@ -8,7 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .permissions import HasResourcePermission
+from .permissions import HasResourcePermission, has_resource_access
 from .models import Role, RoleUser, Resource, ResourceRole
 from .serializers import (
     RoleSerializer, RoleUserSerializer, 
@@ -118,16 +118,6 @@ class ProfileView(APIView):
         request.user.save(update_fields=("email",))
         return self.get(request)
     
-def has_resource_access(user, resource_name):
-    if user.is_superuser:
-        return True
-    user_roles = RoleUser.objects.filter(user=user).values_list('role', flat=True)
-    has_access = ResourceRole.objects.filter(
-        role__in=user_roles, 
-        resource__name=resource_name
-    ).exists()
-    return has_access
-
 class CheckResourceAccessView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -160,15 +150,24 @@ class PermissionsView(APIView):
         grants = ResourceRole.objects.filter(
             role_id__in=role_ids
         ).select_related("role", "resource").order_by("resource__name", "role__name")
+        method_fields = (
+            ("GET", "can_read"),
+            ("POST", "can_create"),
+            ("PUT", "can_update"),
+            ("PATCH", "can_update"),
+            ("DELETE", "can_delete"),
+        )
         return Response({
             "permissions": [
                 {
                     "resource": grant.resource.name,
-                    "method": "*",
+                    "method": method,
                     "path": f"/api/{grant.resource.name}/",
                     "roleId": grant.role_id,
                     "roleName": grant.role.name,
                 }
                 for grant in grants
+                for method, field in method_fields
+                if getattr(grant, field)
             ]
         })
